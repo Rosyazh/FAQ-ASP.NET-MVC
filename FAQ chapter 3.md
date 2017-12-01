@@ -22,6 +22,8 @@ public ActionResult Index()
 > добавить неймспейс с нашей моделью
 <add namespace="MvcMusicStore.Models">
 - Как создать представление для определенного действия метода?
+    > gf
+    > gf
 - Как создать представление для определенного действия метода? 2) Шаблоны представлений. 3) Опции Reference script libraries, 4) Create as a partial view, 5) Use a layout page.
     
 > 1) на методе правой кнопкой мыши и там выбрать добавить представление 
