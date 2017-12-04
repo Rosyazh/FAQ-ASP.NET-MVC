@@ -37,11 +37,11 @@ public ActionResult Index()
 > 5) Use a layout page - используется для переопределения дефолтного лайаута. эта опция указывает, будет ли использоваться мастер-страница или представление будет самодостаточным. После установки этой опции нам станет доступным нижнее поле, в котором можно выбрать мастер-страницу. Для движка Razor указание мастер-страницы не является обязательным, если вы собираетесь использовать мастер-страницу, определенную по умолчанию в файле _ViewStart.cshtml. Однако, если вы хотите переопределить мастер-страницу, то можете воспользоваться этой опцией.
 
 - Вставка C# кода в представление. Unencoded Code Expressions. Mixing Code and Plain Text. Escaping the Code Delimiter. Server-Side Comments. Calling a Generic Method.
-> <span>@Html.Raw(model.Message)</span> - unencoded code expression
-> через теги <text> или @: - mixing code and plain text
-> @@ or &#64;  - escaping the code delimeter
-> @* *@ - server-side comments
-> @(Html.SomeMethod<Type>()) - calling generic methods
+> <span>@Html.Raw(model.Message)</span> - unencoded code expression.
+> через теги <text> или @: - mixing code and plain text.
+> @@ or &#64;  - escaping the code delimeter.
+> @* *@ - server-side comments.
+> @(Html.SomeMethod<Type>()) - calling generic methods.
 - Layouts. Sections, optional and not defined sections.
 > 
 - ViewStart.
