@@ -101,6 +101,24 @@ adding duplicate data if your seed runs multiple times on the same database.
 The DbSet.AddOrUpdate() extension method was added to EF 4.3 and above to
 make this easier.
 - View-specific models.
+> The
+album edit scenario is a good example, where your model object (an Album object) doesn’t quite
+contain all the information required by the view. You need the lists of all possible genres and artists,
+too. Two possible solutions exist to this problem .
+The scaffolding-generated code demonstrates the fi rst option: pass the extra information along in
+the ViewBag structure. This solution is entirely reasonable and easy to implement, but some people
+want all the model data to be available through a strongly typed model object.
+The strongly typed model fans will probably look at the second option: build a view-specifi c model
+to carry both the album information and the genre and artists information to a view. Such a model
+might use the following class defi nition:
+public class AlbumEditViewModel
+{
+ public Album AlbumToEdit { get; set; }
+ public SelectList Genres { get; set; }
+ public SelectList Artists { get; set; }
+}
+Instead of putting information in ViewBag, the Edit action would need to instantiate the
+AlbumEditViewModel, set all the object’s properties, and pass the view model to the view. 
 - GET, POST запросы.
 > 
 
@@ -128,4 +146,22 @@ see whether model binding succeeded. ModelState.IsValid
 
 > Объект ModelState сохраняет все значения, которые пользователь ввел для свойств модели, а также все ошибки, связанные с каждым свойством и с моделью в целом. Если в объекте ModelState имеются какие-нибудь ошибки, то свойство ModelState.IsValid возвратит false
 - Model Binding Security & Over-posting Attack.
-> 
+> Sometimes the aggressive search behavior of the model binder can have unintended
+consequences. You’ve already seen how the default model binder looks at
+the available properties on an Album object and tries to fi nd a matching value for
+each property by looking around in the request. Occasionally there is a property
+you don’t want (or expect) the model binder to set, and you need to be careful to
+avoid an “over-posting” attack. A successful over-posting attack might allow a
+malicious person to destroy your application and your data, so do not take this
+warning lightly.
+ASP.NET MVC 5 now includes a comment with warning about over-posting
+attacks as well as the Bind attribute that restricts the binding behavior.
+
+> As mentioned,
+in addition to using the Bind attribute to restrict implicit model binding,
+you can also restrict binding when you use UpdateModel and TryUpdateModel.
+Both methods have an override allowing you to specify an includeProperties
+parameter. This parameter contains an array of property names you’re explicitly
+allowing to be bound, as shown in the following code:
+UpdateModel(product, new[] { "Title", "Price", "AlbumArtUrl" });
+
