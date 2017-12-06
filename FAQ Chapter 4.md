@@ -103,5 +103,25 @@ make this easier.
 - View-specific models.
 - GET, POST запросы.
 - Model Binding, DefaultModelBinder.
+> 
+
+> Привязчик DefaultModelBinder используется по умолчанию, если для данного типа не определен другой привязчик. Чтобы DefaultModelBinder мог связать значение с параметром, элемент данных запроса должен обязательно иметь то же имя, что и параметр.
+In the case of an Album object, the default model binder inspects the album and fi nds all the album properties available for
+binding. Following the naming convention you examined earlier, the default model binder can automatically
+convert and move values from the request into an album object (the model binder can also
+create an instance of the object to populate).
+In other words, when the model binder sees that an Album has a Title property, it looks for a value
+named “Title” in the request. Notice the model binder looks “in the request” and not “in the form
+collection.” The model binder uses components known as value providers to search for values in
+different areas of a request. The model binder can look at route data, the query string, and the form
+collection, and you can add custom value providers if you so desire.
 - Explicit Model Binding. Model state.
+> При использовании параметра в методе действия привязка модели работает неявно. Но мы можем вызвать на контроллере и явную привязку модели с помощью методов UpdateModel и TryUpdateModel. Если модель не прошла валидацию, то метод UpdateModel выбрасывает исключение.
+TryUpdateModel также вызывает привязку модели, но не выбрасывает исключение. Этот метод возвращает значение типа bool - если это значение равно true, модель прошла привязку, если false, то валидация прошла неудачно.
+
+> A byproduct of model binding is model state. For every value the model binder moves into a model,
+it records an entry in model state. You can check model state any time after model binding occurs to
+see whether model binding succeeded. ModelState.IsValid
+
+> Объект ModelState сохраняет все значения, которые пользователь ввел для свойств модели, а также все ошибки, связанные с каждым свойством и с моделью в целом. Если в объекте ModelState имеются какие-нибудь ошибки, то свойство ModelState.IsValid возвратит false
 - Model Binding Security & Over-posting Attack.
