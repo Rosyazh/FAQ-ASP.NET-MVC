@@ -50,7 +50,15 @@ Several templates add a controller derived from the ApiController base class. Yo
 > You can think of a DbSet<T> as a special, data-aware generic list that knows how to load and save data from its parent context. 
 
 - Eager loading vs lazy loading и соображения производительности.
-> 
+> Eager Loading
+Суть Eager Loading заключается в том, чтобы использовать для подгрузки связанных по внешнему ключу данных метод Include. 
+An eager loading strategy attempts to load all data using a single query
+> Lazy Loading
+Еще один способ представляет так называемая "ленивая загрузка" или lazy loading. При таком способе подгрузки при первом обращении к объекту, если связанные данные не нужны, то они не подгружаются. Однако при первом же обращении к навигационному свойству эти данные автоматически подгружаются из бд.
+With
+lazy loading, EF loads only the data for the primary object in the LINQ query (the
+album), and leaves the Genre and Artist properties unpopulated
+
 - Конфигурация источников данных. Что если не сконфигурировать? Что если не создать таблицы?
 - Как посмотреть табличные данные и объекты базы данных в локальной базе?
 > команда меню View -> SQL Server Object Explorer или View -> Server Explorer или SSMS
@@ -62,7 +70,19 @@ Calling into the base class implementation of the Seed method saves your new obj
 For the new database initializer to work, you need to change the application startup code to register the initializer.
 > Все действия по инициализации происходят в методе Seed, а сама инициализация предполагает простое сохранение данных в бд с помощью контекста данных.
 
->Чтобы инициализатор сработал, надо его вызвать. Один из способов вызова инициализатора предполагет вызов его в статическом конструкторе класса контекста.
+> Чтобы инициализатор сработал, надо его вызвать. Один из способов вызова инициализатора предполагет вызов его в статическом конструкторе класса контекста.
+
+> Migrations also support seed methods, so when you make the move from the
+quick and easy database initializer approach to the more sophisticated migrations
+approach, you’ll want to convert any necessary seed methods to work with
+your migrations.
+You need to be aware of an important difference between initializer seeds and
+migration seeds. Because a database initializer seed method runs against an empty
+database, you don’t need to worry about inserting duplicate data. Migration seed
+methods run every time you update the database, so you’ll need to take care to prevent
+adding duplicate data if your seed runs multiple times on the same database.
+The DbSet.AddOrUpdate() extension method was added to EF 4.3 and above to
+make this easier.
 - View-specific models.
 - GET, POST запросы.
 - Model Binding, DefaultModelBinder.
