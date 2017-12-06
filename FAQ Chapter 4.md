@@ -56,6 +56,13 @@ Several templates add a controller derived from the ApiController base class. Yo
 > команда меню View -> SQL Server Object Explorer или View -> Server Explorer или SSMS
 - Как Entity Framework добивается синхронизации таблиц и моделей? Какие стратегии инициализации источника данных можно задать в приложении ASP.NET MVC? Миграция данных при изменении модели.
 - Seeding a Database. Initializer Seeds vs Migration Seeds
+> In this case you can derive a class from the DropCreateDatabaseAlways class and override the Seed
+method. The Seed method enables you to create some initial data for the application.
+Calling into the base class implementation of the Seed method saves your new objects into the database.
+For the new database initializer to work, you need to change the application startup code to register the initializer.
+> Все действия по инициализации происходят в методе Seed, а сама инициализация предполагает простое сохранение данных в бд с помощью контекста данных.
+
+>Чтобы инициализатор сработал, надо его вызвать. Один из способов вызова инициализатора предполагет вызов его в статическом конструкторе класса контекста.
 - View-specific models.
 - GET, POST запросы.
 - Model Binding, DefaultModelBinder.
