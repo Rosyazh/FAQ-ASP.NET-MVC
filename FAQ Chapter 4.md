@@ -60,6 +60,23 @@ lazy loading, EF loads only the data for the primary object in the LINQ query (t
 album), and leaves the Genre and Artist properties unpopulated
 
 - Конфигурация источников данных. Что если не сконфигурировать? Что если не создать таблицы?
+> If you don’t confi gure specifi c mappings from your models to database tables and columns, EF uses
+conventions to create a database schema. If you don’t confi gure a specifi c database connection to use
+at runtime, EF creates one using a convention.
+
+> This allows you to control the context’s database connections in two ways.
+First, you can modify the connection string in web.config.
+Second, you can override the database name EF will use for a given DbContext by
+altering the name argument passed into the DbContext’s constructor.
+
+> Without a specifi c connection confi gured, EF tries to connect to a LocalDB instance of SQL Server
+and fi nd a database with the same name as the DbContext derived class. If EF can connect to the
+database server, but doesn’t fi nd a database, the framework creates the database. 
+
+> The EF automatically creates tables to store album, artist, and genre information. The framework
+uses the model’s property names and data types to determine the names and data types of the table
+column. Notice how the framework also deduced each table’s primary key column and the foreign
+key relationships between tables.
 - Как посмотреть табличные данные и объекты базы данных в локальной базе?
 > команда меню View -> SQL Server Object Explorer или View -> Server Explorer или SSMS
 - Как Entity Framework добивается синхронизации таблиц и моделей? Какие стратегии инициализации источника данных можно задать в приложении ASP.NET MVC? Миграция данных при изменении модели.
