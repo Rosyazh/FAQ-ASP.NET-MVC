@@ -102,8 +102,11 @@ The DbSet.AddOrUpdate() extension method was added to EF 4.3 and above to
 make this easier.
 - View-specific models.
 - GET, POST запросы.
-- Model Binding, DefaultModelBinder.
 > 
+
+> 
+- Model Binding, DefaultModelBinder.
+> Механизм, который способствует сопоставлению значений с используемыми в методах контроллера параметрами. И этот механизм называется привязкой модели.
 
 > Привязчик DefaultModelBinder используется по умолчанию, если для данного типа не определен другой привязчик. Чтобы DefaultModelBinder мог связать значение с параметром, элемент данных запроса должен обязательно иметь то же имя, что и параметр.
 In the case of an Album object, the default model binder inspects the album and fi nds all the album properties available for
@@ -125,3 +128,4 @@ see whether model binding succeeded. ModelState.IsValid
 
 > Объект ModelState сохраняет все значения, которые пользователь ввел для свойств модели, а также все ошибки, связанные с каждым свойством и с моделью в целом. Если в объекте ModelState имеются какие-нибудь ошибки, то свойство ModelState.IsValid возвратит false
 - Model Binding Security & Over-posting Attack.
+> 
