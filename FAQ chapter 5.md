@@ -61,8 +61,7 @@ the TextBox helper to accept free-form input from a user. For example, the call 
 
 results in
 
-```<input id="Title" name="Title" type="text"
- value="For Those About To Rock We Salute You" />```
+```<input id="Title" name="Title" type="text" value="For Those About To Rock We Salute You" />```
 
 Use TextArea to render a <textarea> element for multi-line text
 entry. The following code:
@@ -71,8 +70,7 @@ entry. The following code:
 
 produces
 
-```<textarea cols="20" id="text" name="text" rows="2">hello &lt;br /&gt; world
-</textarea>```
+```<textarea cols="20" id="text" name="text" rows="2">hello &lt;br /&gt; world </textarea>```
 
 > #### Html.Label
 The Label helper returns a <label/> element using the string parameter to determine the rendered
@@ -99,8 +97,7 @@ Typically, a select element serves two purposes:
 > #### Html.ValidationMessage
 When an error exists for a particular fi eld in the ModelState dictionary, you can use the
 ValidationMessage helper to display that message. For example, in the following controller action,
-you purposely add an error to model state for the Title property:
-[HttpPost]
+you purposely add an error to model state for the Title property: [HttpPost].
 
 ```public ActionResult Edit(int id, FormCollection collection)```
 
@@ -133,10 +130,96 @@ an override that allows you to override the error message from within the view:
 
 - Где helper ищет значения, например Html.Textbox("Title")
 - Строго типизированные helper'ы и их преимущейства перед обычными helper'ами.
+> 
+
 - Helpers and Model Metadata.
+> Helpers do more than just look up data inside ViewData; they also take advantage of available
+model metadata. For example, the album edit form uses the Label helper to display a label element
+for the genre selection list:
+```@Html.Label("GenreId")```
+The helper produces the following output:
+```<label for="GenreId">Genre</label>```
+Where did the Genre text come from? The helper asks the runtime whether any model metadata is
+available for GenreId, and the runtime provides information from the DisplayName attribute decorating
+the Album model: 
+
+```[DisplayName("Genre")]````
+
+```public int GenreId { get; set; }```
+
 - Helpers and Model State.
+> All the helpers you use to display form values also interact with ModelState. Remember,
+ModelState is a byproduct of model binding and holds all validation errors detected during model
+binding. Model state also holds the raw values the user submits to update a model.
+Helpers used to render form fi elds automatically look up their current value in the ModelState
+dictionary. The helpers use the name expression as a key into the ModelState dictionary. If an
+attempted value exists in ModelState, the helper uses the value from ModelState instead of a value
+in view data.
+The ModelState lookup allows bad values to preserve themselves after model binding fails. For
+example, if the user enters the value abc into the editor for a DateTime property, model binding
+will fail and the value abc will go into model state for the associated property. When you re-render
+the view for the user to fi x validation errors, the value abc will still appear in the DateTime editor,
+allowing the users to see the text they tried as a problem and allowing them to correct the error.
+When ModelState contains an error for a given property, the form helper associated with the error
+renders a CSS class of input-validation-error in addition to any explicitly specifi ed CSS classes.
+The default style sheet, style.css, included in the project template contains styling for this class.
+
 - Helper для поля ввода пароля.
+> The Html.Password helper renders a password fi eld. It’s much like the TextBox helper, except that it
+does not retain the posted value, and it uses a password mask. The following code:
+@Html.Password("UserPassword")
+results in
+<input id="UserPassword" name="UserPassword" type="password" value="" />
+The strongly typed syntax for Html.Password, as you would expect, is Html.PasswordFor. Here’s
+how to use it to display the UserPassword property:
+```@Html.PasswordFor(m => m.UserPassword)```
 - Helpers for radio buttons, checkboxes.
+Radio buttons are generally grouped together to provide a range of possible options for a single
+value. For example, if you want the user to select a color from a specifi c list of colors, you can use
+multiple radio buttons to present the choices. To group the radio buttons, you give each button the
+same name. Only the selected radio button is posted back to the server when the form is submitted.
+The Html.RadioButton helper renders a simple radio button:
+
+```@Html.RadioButton("color", "red")```
+
+```@Html.RadioButton("color", "blue", true)```
+
+```@Html.RadioButton("color", "green")```
+
+and results in
+
+```<input id="color" name="color" type="radio" value="red" />```
+
+```<input checked="checked" id="color" name="color" type="radio" value="blue" />```
+
+```<input id="color" name="color" type="radio" value="green" />```
+
+Html.RadioButton has a strongly typed counterpart, Html.RadioButtonFor. Rather than a name
+and a value, the strongly typed version takes an expression that identifi es the object that contains
+the property to render, followed by a value to submit when the user selects the radio button.
+
+```@Html.RadioButtonFor(m => m.GenreId, "1") Rock```
+
+```@Html.RadioButtonFor(m => m.GenreId, "2") Jazz```
+
+```@Html.RadioButtonFor(m => m.GenreId, "3") Pop```
+
+> The CheckBox helper is unique because it renders two input elements. Take the following code, for xample:
+
+```@Html.CheckBox("IsDiscounted")```
+
+This code produces the following HTML:
+<input id="IsDiscounted" name="IsDiscounted" type="checkbox" value="true" />
+<input name="IsDiscounted" type="hidden" value="false" />
+You are probably wondering why the helper renders a hidden input in addition to the checkbox
+input. The helper renders two inputs because the HTML specifi cation indicates that a browser will
+submit a value for a checkbox only when the checkbox is on (selected). In this example, the second
+input guarantees a value will appear for IsDiscounted even when the user does not check the
+checkbox input.
+
 - Rendering helpers.
+> 
 - Rendering partial views with helpers.
+>
 - Action helpers.
+>
