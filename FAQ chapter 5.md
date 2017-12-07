@@ -147,7 +147,7 @@ Where did the Genre text come from? The helper asks the runtime whether any mode
 available for GenreId, and the runtime provides information from the DisplayName attribute decorating
 the Album model: 
 
-```[DisplayName("Genre")]````
+```[DisplayName("Genre")]```
 
 ```public int GenreId { get; set; }```
 
