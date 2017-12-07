@@ -91,13 +91,17 @@ Both the DropDownList and ListBox helpers return a <select /> element. DropDownL
 single item selection, whereas ListBox allows for multiple item selection (by setting the multiple
 attribute to multiple in the rendered markup).
 Typically, a select element serves two purposes:
-➤ To show a list of possible options
-➤ To show the current value for a field
+
+> ➤ To show a list of possible options
+
+> ➤ To show the current value for a field
 
 > #### Html.ValidationMessage
 When an error exists for a particular fi eld in the ModelState dictionary, you can use the
 ValidationMessage helper to display that message. For example, in the following controller action,
-you purposely add an error to model state for the Title property: [HttpPost].
+you purposely add an error to model state for the Title property: 
+
+```[HttpPost]```
 
 ```public ActionResult Edit(int id, FormCollection collection)```
 
