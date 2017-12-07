@@ -23,10 +23,10 @@ The two most important attributes of a form tag: the action and the method attri
 contains a URL. The URL can be relative, or in cases where you want to send information to a different
 application or a different server, the action URL can also be an absolute URL. The following
 form tag sends a search term (the input named q) to the Bing search page from any application:
-```<form action="http://www.bing.com/search">
-     <input name="q" type="text" />
-     <input type="submit" value="Search!" />
-</form>```
+```<form action="http://www.bing.com/search">```
+```     <input name="q" type="text" />```
+```     <input type="submit" value="Search!" />```
+```</form>```
 
 
 - GET vs POST.
