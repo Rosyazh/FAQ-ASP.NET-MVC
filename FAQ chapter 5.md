@@ -86,15 +86,15 @@ input for a user. Also, if a user clicks the label, the browser transfers focus 
 control. This is especially useful with checkboxes and radio buttons in order to provide the user
 with a larger area to click (instead of clicking only on the checkbox or radio button itself).
 
-
 > #### Html.DropDownList and Html.ListBox
-Both the DropDownList and ListBox helpers return a <select /> element. DropDownList allows
+
+> ggf
+
+> Both the DropDownList and ListBox helpers return a <select /> element. DropDownList allows
 single item selection, whereas ListBox allows for multiple item selection (by setting the multiple
 attribute to multiple in the rendered markup). Typically, a select element serves two purposes:
-
-➤ To show a list of possible options
-
-➤ To show the current value for a field
+To show a list of possible options
+To show the current value for a field
 
 > #### Html.ValidationMessage
 When an error exists for a particular fi eld in the ModelState dictionary, you can use the
