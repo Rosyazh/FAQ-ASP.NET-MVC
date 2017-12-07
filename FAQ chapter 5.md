@@ -15,6 +15,20 @@
 Контрольные вопросы к Главе 5:
 - Для чего нужны HTML Helpers?
 - Формы. Action. Method.
+> A form is a container for input elements: buttons, checkboxes, text inputs, and more. The input elements
+in a form enable a user to enter information into a page and submit information to a server.
+The two most important attributes of a form tag: the action and the method attributes.
+
+> The action attribute tells a web browser where to send the information, so naturally the action
+contains a URL. The URL can be relative, or in cases where you want to send information to a different
+application or a different server, the action URL can also be an absolute URL. The following
+form tag sends a search term (the input named q) to the Bing search page from any application:
+```<form action="http://www.bing.com/search">
+ <input name="q" type="text" />
+ <input type="submit" value="Search!" />
+</form>```
+
+
 - GET vs POST.
 - Form Helpers, параметр htmlAttributes, как установить значение аттрибута class? Как установить значение аттрибута data-validatable?
 - Класс HtmlHelper и методы расширений для свойства Html в представлении.
