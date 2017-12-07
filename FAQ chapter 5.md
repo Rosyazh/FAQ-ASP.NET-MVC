@@ -24,17 +24,113 @@ contains a URL. The URL can be relative, or in cases where you want to send info
 application or a different server, the action URL can also be an absolute URL. The following
 form tag sends a search term (the input named q) to the Bing search page from any application:
 
-```<form action="http://www.bing.com/search">
-       <input name="q" type="text" />
-       <input type="submit" value="Search!" />
-</form>```
+```<form action="http://www.bing.com/search">```
 
+```     <input name="q" type="text" />```
+
+```     <input type="submit" value="Search!" />```
+
+```</form>```
+
+> The method attribute tells the browser whether to use an HTTP POST or HTTP GET when sending the information.
+You might think the default method for a form is HTTP POST. After all, you regularly POST forms
+to update your profi le, submit a credit card purchase, and leave comments on the funny animal
+videos on YouTube. However, the default method value is “get,” so by default a form sends an
+HTTP GET request:
+
+```<form action="http://www.bing.com/search" method="get">```
+
+```    <input name="q" type="text" />```
+
+```    <input type="submit" value="Search!" />```
+
+```</form>```
 
 - GET vs POST.
+> 
+
 - Form Helpers, параметр htmlAttributes, как установить значение аттрибута class? Как установить значение аттрибута data-validatable?
 - Класс HtmlHelper и методы расширений для свойства Html в представлении.
 - Helper для отображения ошибок в представлении при валидации модели, как изменить стиль отображения ошибок.
 - Helper'ы для скрытого поля, текстового поля, метки (label), выпадающего списка (единичный и множественный выбор, коллекцию каких объектов содержит список), отображения ошибок валидации свойства модели, многострочного текста.
+> #### Html.TextBox and Html.TextArea
+The TextBox helper renders an input tag with the type attribute set to text. You commonly use
+the TextBox helper to accept free-form input from a user. For example, the call to
+
+```@Html.TextBox("Title", Model.Title)```
+
+results in
+
+```<input id="Title" name="Title" type="text"
+ value="For Those About To Rock We Salute You" />```
+
+Use TextArea to render a <textarea> element for multi-line text
+entry. The following code:
+       
+```@Html.TextArea("text", "hello <br/> world")```
+
+produces
+
+```<textarea cols="20" id="text" name="text" rows="2">hello &lt;br /&gt; world
+</textarea>```
+
+> #### Html.Label
+The Label helper returns a <label/> element using the string parameter to determine the rendered
+text and for attribute value. A different overload of the helper enables you to independently set the
+for attribute and the text. In the preceding code, the call to Html.Label(“GenreId”) produces the
+following HTML:
+
+```<label for="GenreId">Genre</label>```
+
+The purpose of a label is to attach information to other input elements, such as text inputs, and boost the accessibility of your application. The for attribute of the label should contain
+the ID of the associated input element. Screen readers can use the text of the label to provide a better description of the
+input for a user. Also, if a user clicks the label, the browser transfers focus to the associated input
+control. This is especially useful with checkboxes and radio buttons in order to provide the user
+with a larger area to click (instead of clicking only on the checkbox or radio button itself).
+
+> #### Html.DropDownList and Html.ListBox
+Both the DropDownList and ListBox helpers return a <select /> element. DropDownList allows
+single item selection, whereas ListBox allows for multiple item selection (by setting the multiple
+attribute to multiple in the rendered markup).
+Typically, a select element serves two purposes:
+➤ To show a list of possible options
+➤ To show the current value for a field
+
+> #### Html.ValidationMessage
+When an error exists for a particular fi eld in the ModelState dictionary, you can use the
+ValidationMessage helper to display that message. For example, in the following controller action,
+you purposely add an error to model state for the Title property:
+[HttpPost]
+
+```public ActionResult Edit(int id, FormCollection collection)```
+
+```{ var album = storeDB.Albums.Find(id);```
+
+```    ModelState.AddModelError("Title", "What a terrible name!");```
+
+```    return View(album);```
+
+```}```
+
+In the view, you can display the error message (if any) with the following code:
+
+```@Html.ValidationMessage("Title")```
+
+which results in
+
+```<span class="field-validation-error" data-valmsg-for="Title" data-valmsg-replace="true">```
+```    What a terrible name!```
+```</span>```
+
+This message appears only if there is an error in the model state for the key Title. You can also call
+an override that allows you to override the error message from within the view:
+
+```@Html.ValidationMessage("Title", "Something is wrong with your title")```
+ 
+ which results in
+ 
+```<span class="field-validation-error" data-valmsg-for="Title" data-valmsg-replace="false">Something is wrong with your title```
+
 - Где helper ищет значения, например Html.Textbox("Title")
 - Строго типизированные helper'ы и их преимущейства перед обычными helper'ами.
 - Helpers and Model Metadata.
