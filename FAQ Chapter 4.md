@@ -12,7 +12,7 @@
 
 > ➤ It serves as a quick check to catch any simple syntax errors.
 
-> ➤ Nearly as important, the newly added classes won’t show up in the Visual Studio scaffolding dialogs in the next section until you’ve compiled the application. Compiling before using the scaffolding system is not just a good p
+> ➤ Nearly as important, the newly added classes won’t show up in the Visual Studio scaffolding dialogs in the next section until you’ve compiled the application.
 - Scaffolding: что такое, опишите имеющиеся шаблоны.
 > Шаблоны формирования позволяют по заданной модели и контексту данных сформировать весь необходимый базовый код контроллеров, а также всю разметку для представлений, с помощью которых можно управлять записями в БД.
 
