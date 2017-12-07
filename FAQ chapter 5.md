@@ -53,6 +53,7 @@ HTTP GET request:
 - Класс HtmlHelper и методы расширений для свойства Html в представлении.
 - Helper для отображения ошибок в представлении при валидации модели, как изменить стиль отображения ошибок.
 - Helper'ы для скрытого поля, текстового поля, метки (label), выпадающего списка (единичный и множественный выбор, коллекцию каких объектов содержит список), отображения ошибок валидации свойства модели, многострочного текста.
+
 > #### Html.TextBox and Html.TextArea
 The TextBox helper renders an input tag with the type attribute set to text. You commonly use
 the TextBox helper to accept free-form input from a user. For example, the call to
@@ -88,13 +89,12 @@ with a larger area to click (instead of clicking only on the checkbox or radio b
 
 > #### Html.DropDownList and Html.ListBox
 
-> ggf
-
 > Both the DropDownList and ListBox helpers return a <select /> element. DropDownList allows
 single item selection, whereas ListBox allows for multiple item selection (by setting the multiple
 attribute to multiple in the rendered markup). Typically, a select element serves two purposes:
-To show a list of possible options
-To show the current value for a field
+➤ To show a list of possible options
+➤ To show the current value for a field
+
 
 > #### Html.ValidationMessage
 When an error exists for a particular fi eld in the ModelState dictionary, you can use the
@@ -133,6 +133,8 @@ an override that allows you to override the error message from within the view:
 ```<span class="field-validation-error" data-valmsg-for="Title" data-valmsg-replace="false">Something is wrong with your title```
 
 - Где helper ищет значения, например Html.Textbox("Title")
+>
+
 - Строго типизированные helper'ы и их преимущейства перед обычными helper'ами.
 > 
 
