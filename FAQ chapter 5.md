@@ -86,15 +86,15 @@ input for a user. Also, if a user clicks the label, the browser transfers focus 
 control. This is especially useful with checkboxes and radio buttons in order to provide the user
 with a larger area to click (instead of clicking only on the checkbox or radio button itself).
 
+
 > #### Html.DropDownList and Html.ListBox
 Both the DropDownList and ListBox helpers return a <select /> element. DropDownList allows
 single item selection, whereas ListBox allows for multiple item selection (by setting the multiple
-attribute to multiple in the rendered markup).
-Typically, a select element serves two purposes:
+attribute to multiple in the rendered markup). Typically, a select element serves two purposes:
 
-> ➤ To show a list of possible options
+➤ To show a list of possible options
 
-> ➤ To show the current value for a field
+➤ To show the current value for a field
 
 > #### Html.ValidationMessage
 When an error exists for a particular fi eld in the ModelState dictionary, you can use the
@@ -176,7 +176,9 @@ results in
 <input id="UserPassword" name="UserPassword" type="password" value="" />
 The strongly typed syntax for Html.Password, as you would expect, is Html.PasswordFor. Here’s
 how to use it to display the UserPassword property:
+
 ```@Html.PasswordFor(m => m.UserPassword)```
+
 - Helpers for radio buttons, checkboxes.
 Radio buttons are generally grouped together to provide a range of possible options for a single
 value. For example, if you want the user to select a color from a specifi c list of colors, you can use
