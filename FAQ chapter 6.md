@@ -11,6 +11,7 @@
 namespace (although one attribute is defi ned outside this namespace, as you will see). These
 attributes provide server-side validation, and the framework also supports client-side validation
 when you use one of the attributes on a model property.
+
 - **Аттрибут, декларирующий свойство модели как обязательное.**
 > Required
 Because you need the customers to give you their first name, you can decorate the
@@ -41,7 +42,8 @@ public string FirstName { get; set; }
 [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}")]
 public string Email { get; set; }
 ```
-### - Аттрибут, определяющий числовой диапозон для свойства модели.
+
+- **Аттрибут, определяющий числовой диапозон для свойства модели.**
 > Атрибут Range определяет минимальные и максимальные ограничения для числовых данных.
 ```c#
 [Range(35,44)]
@@ -52,6 +54,7 @@ public int Age { get; set; }
 [Range(typeof(decimal), "0.00", "49.99")]
 public decimal Price { get; set; }
 ```
+
 - **Аттрибут, обязывающий свойства иметь одинаковые значения.**
 > Атрибут Compare гарантирует, что два свойства объекта модели имеют одно и то же значение. Если, например, надо, чтобы пользователь ввел пароль дважды:
 ```c#
@@ -76,29 +79,66 @@ public string Name { get; set; }
 [HttpGet]
 public JsonResult CheckName(string name)
 {
-var result = !(name=="Название");
-return Json(result, JsonRequestBehavior.AllowGet);
+    var result = !(name=="Название");
+    return Json(result, JsonRequestBehavior.AllowGet);
 }
 ```
 > Это действие контроллера принимает в качестве параметра имя свойства, подлежащего валидации, и возвращает true или false в форме объекта в формате JSON. При этом если возвращается false, то мы увидим сообщение об ошибке, заданное парааметром ErrorMessage.
+
 - **Как установить текст ошибок для вывода при валидации? Как обеспечить вывод читабельной версии свойства модель в тексте ошибки? Как обеспечить вывод текста ошибки валидации на различных языках для различных локаций?**
 > 
+
 - **В какой момент осуществляется валидация? Как осуществить явную привязку к модели? Валидация и состояние модели. Хелперы валидации.**
 > 
+
 - **Custom validation logic vs default validation logic.**
 > 
+
 - **От какого класса наследуются аттрибуты валидации?**
 > 
+
 - **Опишите реализацию кастомизированной логики валидации (custom validation).**
 > 
+
 - **Как встроить валидацию в сам класс модели?**
 > 
+
 - **Как при помощи аттрибутов аннотации установить отображаемую для пользователя версию название свойства и порядок следования свойств в пользовательском интерфейсе?**
-> 
+> Свойство Name атрибута Display содержит строку, которая будет отображаться вместо имени свойства.
+
+> The Display attribute sets the friendly display name for a model property. You can use the Display
+attribute to fi x the label for the FirstName field. In addition to the name, the Display attribute enables you to control the order in which properties will appear in the UI.
+```c#
+[Required]
+[StringLength(160, MinimumLength=3)]
+[Display(Name="First Name", Order=15000)]
+public string FirstName { get; set; }
+```
+> The default value for Order is 10,000, and fields appear in ascending order.
+
 - **Аттрибут для исключения свойства модели из представления при использовании шаблонов.**
-> 
+> The ScaffoldColumn attribute hides a property from HTML helpers such as EditorForModel and DisplayForModel.
+> With the attribute in place, EditorForModel will no longer display an input or label for the Id field. Note, however, the model binder might still try to move a value into the Id.
+property if it sees a matching value in the request.
+> При редактировании модели атрибут HiddenInput полностью не скрывает поля, так как мы можем посмотреть исходный код страницы и найти соответствующие поля. Чтобы полностью скрыть свойство от хелперов, используется атрибут ScaffoldColumn:
+```c#
+[ScaffoldColumn(false)]
+public int Id { get; set; }
+```
+> Теперь хелперы редактирования не увидят данное свойство и не создадут для него даже скрытое поле на странице.
+
 - **Аттрибут для форматированного отображения значения свойства модели.**
-> 
+> The DisplayFormat attribute handles various formatting options for a property via named parameters.
+You can provide alternate text for display when the property contains a null value, and turn
+off HTML encoding for properties containing markup. You can also specify a data format string for the runtime to apply to the property value. In the following code you format the Total property of a
+model as a currency value:
+```c#
+[DisplayFormat(ApplyFormatInEditMode=true, DataFormatString="{0:c}")]
+public decimal Total { get; set; }
+```
+> The ApplyFormatInEditMode parameter is false by default, so if you want the Total value
+formatted into a form input, you need to set ApplyFormatInEditMode to true. One reason ApplyFormatInEditMode is false by default is because the MVC model binder might not like to parse a value formatted for display.
+
 - **Аттрибут, запрещающий редактировать свойство модели.**
 > Place the ReadOnly attribute on a property if you want to make sure the default model binder does
 not set the property with a new value from the request:
