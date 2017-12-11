@@ -147,9 +147,10 @@ output with the templated helpers (such as DisplayFor and EditorFor). You can de
 own template helpers to override the default MVC behavior. If the template specified by the UIHint is not found, MVC will find an appropriate fallback to use.
 > Данный атрибут указывает, какой будет использоваться шаблон отображения при создании разметки html для данного свойства. Шаблон управляет, как свойство будет рендерится на странице.
 
-> ```[UIHint("Url")]```
-
-> ```public string Name { get; set; }```
+```c#
+[UIHint("Url")]
+public string Name { get; set; }
+```
 
 - **Аттрибут, скрывающий свойство модели в представлении.**
 > The HiddenInput attribute lives in the System.Web.Mvc namespace and tells the runtime to render
@@ -160,11 +161,10 @@ so don’t consider the attribute as foolproof).
 
 > Чтобы скрыть это поле мы можем применить атрибут HiddenInput:
 
-```
+```c#
 [HiddenInput (DisplayValue=false)]
 public int Id { get; set; }
 ```
 
-> Свойство DisplayValue=false указывает, что надо скрыть данное поле. В итоге вы его не увидите
-
+> Свойство DisplayValue=false указывает, что надо скрыть данное поле. В итоге вы его не увидите.
 > При использовании хелперов редактирования (Html.EditorFor/Html.EditorForModel) для данного свойства будет сгенерировано скрытое поле: <input type="hidden" id="Id" name="Id" value="1" />
