@@ -15,11 +15,10 @@ when you use one of the attributes on a model property.
 > Required
 Because you need the customers to give you their first name, you can decorate the
 FirstName property of the Order model with the Required attribute:
-
-> ```[Required]```
-
-> ```public string FirstName { get; set; }```
-
+```c#
+[Required]
+public string FirstName { get; set; }
+```
 > The attribute raises a validation error if either property value is null or empty.
 > Применение этого атрибута к свойству модели означает, что данное свойство должно быть обязательно установлено.
 
@@ -28,71 +27,59 @@ FirstName property of the Order model with the Required attribute:
 provided by the customer will fi t in the database:
 MinimumLength is an optional, named parameter you can use to specify the minimum length for a
 string.
-
-> ```[StringLength(160, MinimumLength=3)]```
-
-> ```public string FirstName { get; set; }```
-
+```c#
+[StringLength(160, MinimumLength=3)]
+public string FirstName { get; set; }
+```
 > Чтобы пользователь не мог ввести очень длинный текст, используется атрибут StringLength. Особенно это актуально, если в базе данных установлено ограничение на размер хранящихся строк.
 
 - **Аттрибут, определяющий текстовый шаблон для свойства модели.**
 > What you can do instead is ensure the value looks like a working e-mail address using a regular expression.
 Использование данного атрибута предполагает, что вводимое значение должно соответствовать указанному в этом атрибуте регулярному выражению.
 > Наиболее распространенный пример - это проверка адреса электронной почты на корректность. 
-
-> ```[RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}")]```
-
-> ```public string Email { get; set; }```
-
+```c#
+[RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}")]
+public string Email { get; set; }
+```
 ### - Аттрибут, определяющий числовой диапозон для свойства модели.
 > Атрибут Range определяет минимальные и максимальные ограничения для числовых данных.
-
-> ```[Range(35,44)]```
-
-> ```public int Age { get; set; }```
-
+```c#
+[Range(35,44)]
+public int Age { get; set; }
+```
 > Атрибут Range может работать как с целочисленными значениями, так и с числами с плавающей точкой. А еще одна перегруженная версия его конструктора принимает параметр Type и две строки (which can allow you to add a range to date and decimal properties).
-
-> ```[Range(typeof(decimal), "0.00", "49.99")]```
-
-> ```public decimal Price { get; set; }```
-
+```c#
+[Range(typeof(decimal), "0.00", "49.99")]
+public decimal Price { get; set; }
+```
 - **Аттрибут, обязывающий свойства иметь одинаковые значения.**
 > Атрибут Compare гарантирует, что два свойства объекта модели имеют одно и то же значение. Если, например, надо, чтобы пользователь ввел пароль дважды:
+```c#
+[DataType(DataType.Password)]
+public string Password { get; set; }
 
-> ```[DataType(DataType.Password)]```
-
-> ```public string Password { get; set; }```
- 
-> ```[Compare("Password",ErrorMessage="Пароли не совпадают")]```
-
-> ```[DataType(DataType.Password)]```
-
-> ```public  string PasswordConfirm { get; set; }```
-
+[Compare("Password",ErrorMessage="Пароли не совпадают")]
+[DataType(DataType.Password)]
+public  string PasswordConfirm { get; set; }
+```
 > Если пользователь введет второй раз другой пароль, отличный от первого, то он увидит ошибку
+
 - **Аттрибут, позволяющий осуществлять валидацию на стороне клиента с обращениями к серверу.**
 > Атрибут Remote в отличие от других классов атрибутов находится в пространстве имен System.Web.Mvc. Он позволяет выполнять валидацию на стороне клиента с обратными вызовами на сервер.
 > Например, название книги, представленое свойством Name, не должно быть равно определенному значению. При валидации на стороне клиента трудно гарантировать соблюдение ряда проверок, особенно если мы задействуем базы данных. А с помощью атрибута Remote мы можем послать значение свойства Name на сервер, а там уже проверить.
-
-> ```[Remote("CheckName", "Home", ErrorMessage = "Name is not valid.")]```
-    
-> ```public string Name { get; set; }```
-
+```c#
+[Remote("CheckName", "Home", ErrorMessage = "Name is not valid.")]
+public string Name { get; set; }
+```
 > В атрибуте можно установить имя действия и имя контроллера, которые должны вызываться кодом на стороне клиента, а также еще ряд именованных параметров, в частности, сообщение об ошибке с помощью параметра ErrorMessage. Клиентский код посылает введенное пользователем значение для свойства Name автоматически, а перегруженный конструктор атрибута позволяет указать дополнительные поля, значения которых надо посылать на сервер.
-
-> ```[HttpGet]```
-
-> ```public JsonResult CheckName(string name)```
-
-> ```{```
-
-> ``` var result = !(name=="Название");```
-
-> ``` return Json(result, JsonRequestBehavior.AllowGet);```
-
-> ```}```
-
+```c#
+[HttpGet]
+public JsonResult CheckName(string name)
+{
+var result = !(name=="Название");
+return Json(result, JsonRequestBehavior.AllowGet);
+}
+```
 > Это действие контроллера принимает в качестве параметра имя свойства, подлежащего валидации, и возвращает true или false в форме объекта в формате JSON. При этом если возвращается false, то мы увидим сообщение об ошибке, заданное парааметром ErrorMessage.
 - **Как установить текст ошибок для вывода при валидации? Как обеспечить вывод читабельной версии свойства модель в тексте ошибки? Как обеспечить вывод текста ошибки валидации на различных языках для различных локаций?**
 > 
@@ -115,22 +102,21 @@ string.
 - **Аттрибут, запрещающий редактировать свойство модели.**
 > Place the ReadOnly attribute on a property if you want to make sure the default model binder does
 not set the property with a new value from the request:
-
-> ```[ReadOnly(true)]```
-
-> ```public decimal Total { get; set; }```
-
+```c#
+[ReadOnly(true)]
+public decimal Total { get; set; }
+```
 > Note the EditorForModel helper will still display an enabled input for the property, so only the
 model binder respects the ReadOnly attribute.
+
 - **Аттрибут, определяющий тип значения свойства модели, например пароль. Какие еще типы могут быть определены посредством данного аттрибута.**
 > The DataType attribute enables you to provide the runtime with information about the specifi c purpose
 of a property. For example, a property of type string can fi ll a variety of scenarios—it might
 hold an e-mail address, a URL, or a password.
-
-> ```[DataType(DataType.Password)]```
-
-> ```public string Password { get; set; }```
-
+```c#
+[DataType(DataType.Password)]
+public string Password { get; set; }
+```
 > Перечисление DataType может принимать несколько различных значений:
 > Currency - Отображает текст в виде валюты
 > DateTime - Отображает дату и время
@@ -141,17 +127,16 @@ hold an e-mail address, a URL, or a password.
 > Password - Отображает символы с использованием маски
 > Url - Отображает строку URL
 > EmailAddress - Отображает электронный адрес
+
 - **Посредством какого аттрибута можно задать шаблон для свойства модели при его отображении хелперами DisplayFor, EditorFor?**
 > The UIHint attribute gives the ASP.NET MVC runtime the name of a template to use when rendering
 output with the templated helpers (such as DisplayFor and EditorFor). You can define your
 own template helpers to override the default MVC behavior. If the template specified by the UIHint is not found, MVC will find an appropriate fallback to use.
 > Данный атрибут указывает, какой будет использоваться шаблон отображения при создании разметки html для данного свойства. Шаблон управляет, как свойство будет рендерится на странице.
-
 ```c#
 [UIHint("Url")]
 public string Name { get; set; }
 ```
-
 - **Аттрибут, скрывающий свойство модели в представлении.**
 > The HiddenInput attribute lives in the System.Web.Mvc namespace and tells the runtime to render
 an input element with a type of hidden. Hidden inputs are a great way to keep information in a
@@ -160,11 +145,9 @@ the data (although a malicious user could change submitted form values to change
 so don’t consider the attribute as foolproof).
 
 > Чтобы скрыть это поле мы можем применить атрибут HiddenInput:
-
 ```c#
 [HiddenInput (DisplayValue=false)]
 public int Id { get; set; }
 ```
-
 > Свойство DisplayValue=false указывает, что надо скрыть данное поле. В итоге вы его не увидите.
 > При использовании хелперов редактирования (Html.EditorFor/Html.EditorForModel) для данного свойства будет сгенерировано скрытое поле: <input type="hidden" id="Id" name="Id" value="1" />
