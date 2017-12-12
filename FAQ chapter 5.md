@@ -59,12 +59,39 @@ HTTP GET request:
 ```</form>```
 
 - GET vs POST.
-> 
+> the GET verb is the right tool for the job because GET represents an idempotent,
+read-only operation. You can send a GET request to a server repeatedly with no ill effects,
+because a GET does not (or should not) change state on the server
+> A POST, on the other hand, is the type of request you
+use to submit a credit card transaction, add an album to
+a shopping cart, or change a password. A POST request
+generally modifi es state on the server, and repeating the
+request might produce undesirable effects (such as double
+billing).
+> Web applications generally use GET requests for reads and POST requests for writes (which
+typically include updates, creates, and deletes). A request to pay for music uses POST. A request to
+search for music, a scenario you look at next, uses GET.
 
 - Form Helpers, параметр htmlAttributes, как установить значение аттрибута class? Как установить значение аттрибута data-validatable?
+> 
 - Класс HtmlHelper и методы расширений для свойства Html в представлении.
 - Helper для отображения ошибок в представлении при валидации модели, как изменить стиль отображения ошибок.
+> The ValidationSummary helper displays an unordered list of all validation errors in the ModelState
+dictionary. The Boolean parameter you are using (with a value of true) is telling the helper to
+exclude property-level errors. In other words, you are telling the summary to display only the errors
+in ModelState associated with the model itself, and exclude any errors associated with a specifi c
+model property. You will be displaying property-level errors separately.
+> Но данный хелпер имеет перегруженные версии, которые помогают настроить более точное отображение сообщений об ошибках:
+> Html.ValidationSummary() - Отображает общий список ошибок сверху
+> Html.ValidationSummary(bool) - Если параметр равен true, то вверху будут отображаться только сообщения об ошибках уровня модели, а специфические ошибки будут отображаться рядом с полями ввода. Если же параметр равен false, то вверху отображаются все ошибки.
+> Html.ValidationSummary(string) - Данная перегруженная версия хелпера отображает перед списком ошибок сообщение, которое передается в параметр string
+> Html.ValidationSummary(bool, string) - Сочетает две предыдущие перегруженные версии
+
+> Еще один важный момент отображения ошибок - это их стилизация. То, что мы видим ошибки в красном цвете и границы полей ввода также в красном цвете, не жестко установлено, и мы все это можем изменить. В файле стилей Site.css мы можем найти секцию, которая как раз и отвечает за стилизацию.
+
 - Helper'ы для скрытого поля, текстового поля, метки (label), выпадающего списка (единичный и множественный выбор, коллекцию каких объектов содержит список), отображения ошибок валидации свойства модели, многострочного текста.
+> @Html.HiddenFor(model => model.AlbumId)
+> @Html.Hidden("BookId", "2")
 
 > #### Html.TextBox and Html.TextArea
 The TextBox helper renders an input tag with the type attribute set to text. You commonly use
@@ -239,8 +266,80 @@ input guarantees a value will appear for IsDiscounted even when the user does no
 checkbox input.
 
 - Rendering helpers.
-> 
+> Rendering helpers produce links to other resources inside an application, and can also enable you to
+build those reusable pieces of UI known as partial views.
+
 - Rendering partial views with helpers.
->
+> The Partial helper renders a partial view into a string. Typically, a partial view contains reusable
+markup you want to render from inside multiple different views. Partial has four overloads:
+```c#
+public void Partial(string partialViewName);
+public void Partial(string partialViewName, object model);
+public void Partial(string partialViewName, ViewDataDictionary viewData);
+public void Partial(string partialViewName, object model, ViewDataDictionary viewData);
+```
+> Notice that you do not have to specify the path or fi le extension for a view because the logic the
+runtime uses to locate a partial view is the same logic the runtime uses to locate a normal view. For
+example, the following code renders a partial view named AlbumDisplay. The runtime looks for the
+view using all the available view engines.
+`@Html.Partial("AlbumDisplay")`
+> The RenderPartial helper is similar to Partial, but RenderPartial writes directly to the response
+output stream instead of returning a string. For this reason, you must place RenderPartial inside
+a code block instead of a code expression. To illustrate, the following two lines of code render the
+same output to the output stream:
+```c#
+@{Html.RenderPartial("AlbumDisplay "); }
+@Html.Partial("AlbumDisplay ")
+```
+> So, which should you use, Partial or RenderPartial? In general, you should prefer Partial to
+RenderPartial because Partial is more convenient (you don’t have to wrap the call in a code
+block with curly braces). However, RenderPartial might result in better performance because it
+writes directly to the response stream, although it would require a lot of use (either high site traffi c
+or repeated calls in a loop) before the difference would be noticeable.
+
 - Action helpers.
->
+> Action and RenderAction are similar to the Partial and RenderPartial helpers. The Partial
+helper typically helps a view render a portion of a view’s model using view markup in a separate fi le.
+Action, on the other hand, executes a separate controller action and displays the results. Action
+offers more fl exibility and reuse because the controller action can build a different model and make
+use of a separate controller context.
+> Once again, the only difference between Action and RenderAction is that RenderAction writes
+directly to the response (which can bring a slight effi ciency gain). Here’s a quick look at how you
+might use this method. Imagine you are using the following controller:
+```c#
+public class MyController : Controller {
+ public ActionResult Index() {
+ return View();
+ }
+ 
+ [ChildActionOnly]
+ public ActionResult Menu() {
+ var menu = GetMenuFromSomewhere();
+ return PartialView(menu);
+ }
+}
+```
+> The Menu action builds a menu model and returns a partial view with just the menu:
+```html
+@model Menu
+<ul>
+@foreach (var item in Model.MenuItem) {
+ <li>@item.Text</li>
+}
+</ul>
+```
+> In your Index.cshtml view, you can now call into the Menu action to display the menu:
+```html
+<html>
+<head><title>Index with Menu</title></head>
+<body>
+ @Html.Action("Menu")
+ <h1>Welcome to the Index View</h1>
+</body>
+</html>
+```
+> Notice that the Menu action is marked with a ChildActionOnlyAttribute. The attribute prevents
+the runtime from invoking the action directly via a URL. Instead, only a call to Action or
+RenderAction can invoke a child action. The ChildActionOnlyAttribute isn’t required, but is
+generally recommended for child actions.
+
