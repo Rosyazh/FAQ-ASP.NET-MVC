@@ -14,6 +14,18 @@
 
 Контрольные вопросы к Главе 5:
 - Для чего нужны HTML Helpers?
+> HTML helpers help you work with HTML. Because it seems like a
+simple task to type HTML elements into a text editor, you might wonder why you need any
+help with your HTML. Tag names are the easy part, however. The hard part of working with
+HTML is making sure the URLs inside of links point to the correct locations, form elements
+have the proper names and values for model binding, and other elements display the appropriate
+errors when model binding fails.
+> Tying all these pieces together requires more than just HTML markup. It also requires some
+coordination between a view and the runtime. In this chapter, you see how easy it is to establish
+this coordination. Before you begin working with helpers, however, you fi rst learn about
+forms. Forms are where most of the hard work happens inside an application, and are where
+you need to use HTML helpers the most.
+
 - Формы. Action. Method.
 > A form is a container for input elements: buttons, checkboxes, text inputs, and more. The input elements
 in a form enable a user to enter information into a page and submit information to a server.
