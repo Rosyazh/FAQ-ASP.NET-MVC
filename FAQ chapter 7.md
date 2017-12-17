@@ -53,6 +53,7 @@ method, which is a standard method defi ned in the IAuthorizationFilter interfac
 > When you select the Windows Authentication option, authentication is effectively handled outside
 of the application by the web browser, Windows, and IIS. For this reason, Startup.Auth.cs is not
 included in the project, and no authentication middleware is confi gured.
+
 > Because Registration and Log On with Windows Authentication are handled outside of the web
 application, this template also doesn’t require the AccountController or the associated models
 and views. To confi gure Windows Authentication, this template includes the following line in web
@@ -60,34 +61,38 @@ and views. To confi gure Windows Authentication, this template includes the foll
 ```<authentication mode="Windows" />```
 
 > To use the Intranet authentication option, you’ll need to enable Windows authentication and disable Anonymous authentication.
-> IIS 7 and IIS 8
+
+> *IIS 7 and IIS 8*
+
 > Complete the following steps to confi gure Intranet authentication when running under IIS 7 and
 > IIS 8:
-1. Open IIS Manager and navigate to your website.
-2. In Features View, double-click Authentication.
-3. On the Authentication page, select Windows authentication. If Windows authentication is
+> 1. Open IIS Manager and navigate to your website.
+> 2. In Features View, double-click Authentication.
+> 3. On the Authentication page, select Windows authentication. If Windows authentication is
 not an option, you’ll need to make sure Windows authentication is installed on the server.
-To enable Windows authentication in Windows:
-a. In the Control Panel, open Programs and Features.
-b. Select Turn Windows features on or off.
-c. Navigate to Internet Information Services ➪ World Wide Web Services ➪ Security and
+
+> To enable Windows authentication in Windows:
+> > a. In the Control Panel, open Programs and Features.
+> > b. Select Turn Windows features on or off.
+> > c. Navigate to Internet Information Services ➪ World Wide Web Services ➪ Security and
 make sure the Windows authentication node is checked.
-To enable Windows authentication on Windows Server:
-a. In the Server Manager, select Web Server (IIS) and click Add Role Services.
-b. Navigate to Web Server ➪ Security and make sure the Windows authentication node is
+
+> To enable Windows authentication on Windows Server:
+> > a. In the Server Manager, select Web Server (IIS) and click Add Role Services.
+> > b. Navigate to Web Server ➪ Security and make sure the Windows authentication node is
 checked.
-4. In the Actions pane, click Enable to use Windows authentication.
-5. On the Authentication page, select Anonymous authentication.
-6. In the Actions pane, click Disable to disable anonymous authentication.
+> 4. In the Actions pane, click Enable to use Windows authentication.
+> 5. On the Authentication page, select Anonymous authentication.
+> 6. In the Actions pane, click Disable to disable anonymous authentication.
 
 > IIS Express
-Complete the following steps to confi gure Intranet authentication when running under IIS 7
+> Complete the following steps to confi gure Intranet authentication when running under IIS 7
 and IIS 8:
-1. Click your project in the Solution Explorer to select the project.
-2. If the Properties pane is not open, open it (F4).
-3. In the Properties pane for your project:
-a. Set Anonymous Authentication to Disabled.
-b. Set Windows Authentication to Enabled.
+> 1. Click your project in the Solution Explorer to select the project.
+> 2. If the Properties pane is not open, open it (F4).
+> 3. In the Properties pane for your project:
+> > a. Set Anonymous Authentication to Disabled.
+> > b. Set Windows Authentication to Enabled.
 
 - Как ограничить действия контроллера для определенных ролей и/или пользователей?
 - Users vs Roles. Roles vs Claims.
