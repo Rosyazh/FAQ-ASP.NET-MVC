@@ -17,7 +17,7 @@
 - в корневом каталоге приложения создайте страницу Error.html и обеспечьте перенаправление на эту страницу в случае возникновения ошибки, запустите приложение и сгенерируйте ошибку посредством обращения к несуществующему контроллеру
               
 Контрольные вопросы к Главе 7:
-- Что такое аутентификация? Что такое авторизация?
+- **Что такое аутентификация? Что такое авторизация?**
 > Authentication is verifying that users are who they say they are, using
 some form of login mechanism (username/password, OpenID, OAuth and so on—
 something that says “this is who I am”).
@@ -26,7 +26,7 @@ something that says “this is who I am”).
 what they want to do with respect to your site. This is usually achieved using some
 type of role-based or claim-based system.
 
-- Как предотвратить анонимное обращение к действию контроллера? ко всем действиям контроллера? ко всему ASP.NET MVC приложению? как разрешить анонимный доступ к определенному действию или контроллеру?
+- **Как предотвратить анонимное обращение к действию контроллера? ко всем действиям контроллера? ко всему ASP.NET MVC приложению? как разрешить анонимный доступ к определенному действию или контроллеру?**
 > You need to know who the users are when they buy the album. You can resolve
 this by adding the AuthorizeAttribute to the Buy action, like this:
 ```c#
@@ -87,12 +87,12 @@ custom authorization fi lters, you’ll want to use a new feature in MVC 5: over
 you to locally override any fi lter (for example, any custom authorization fi lter that derives from
 IAuthorizationFilters).
 
-- Как аттрибут Authorize работает?
+- **Как аттрибут Authorize работает?**
 > The AuthorizeAttribute is an authorization fi lter, which means that it executes before the associated
 controller action. The AuthorizeAttribute performs its main work in the OnAuthorization
 method, which is a standard method defi ned in the IAuthorizationFilter interface.
 
-- Как работает аутентификация Windows и как ее сконфигурировать для приложения (IIS 7/8, IIS Express)?
+- **Как работает аутентификация Windows и как ее сконфигурировать для приложения (IIS 7/8, IIS Express)?**
 > When you select the Windows Authentication option, authentication is effectively handled outside
 of the application by the web browser, Windows, and IIS. For this reason, Startup.Auth.cs is not
 included in the project, and no authentication middleware is confi gured.
@@ -143,7 +143,7 @@ and IIS 8:
 
 > > b. Set Windows Authentication to Enabled.
 
-- Как ограничить действия контроллера для определенных ролей и/или пользователей?
+- **Как ограничить действия контроллера для определенных ролей и/или пользователей?**
 > So far you’ve looked at the use of AuthorizeAttribute to prevent anonymous access to a controller
 or controller action. However, as mentioned, you can also limit access to specifi c users or roles.
 A common example of where this technique is used is in administrative functions.
@@ -173,7 +173,7 @@ And you can combine them, as well:
 [Authorize(Roles="UsersNamedScott", Users="Jon,Phil,Brad,David")]
 public class TopSecretController:Controller
 ```
-- Users vs Roles. Roles vs Claims.
+- **Users vs Roles. Roles vs Claims.**
 > Managing your permissions based on roles instead of users is generally considered
 a better idea, for several reasons:
 
@@ -213,11 +213,147 @@ employees you rule.
 > This means that roles are really a specifi c case of claims, because membership in a
 role is just one simple claim.
 
-- Как добавить дополнительные поля в профайл пользователя?
-- Какие классы используются для управления ролями и пользователями в ASP.NET Identity?
-- Стороння аутентификация и ее преимущества.
-- Registering External Login Providers. Configuring OpenID Providers. Configuring OAuth Providers.
-- Соображения безопасности при использовании сторонней аутентификации.
-- SSL/HTTPS при аутентификации.
-- Виды угроз безопасности веб приложений и способы их предотвращения, в частности в контексте ASP.NET MVC.
-- Proper Error Reporting and the Stack Trace. Using Configuration Transforms. Using Retail Deployment Configuration in Production. Using a dedicated Error Loging System.
+- **Как добавить дополнительные поля в профайл пользователя?**
+> One of the design requirements for ASP.NET Identity is to allow for extensive customization without
+undue pain. Some of the extensibility points include:
+
+> ➤ Adding additional user profi le data is now trivial.
+
+> ➤ Persistance control is supported through the use of UserStore and RoleStore abstractions over
+the data access layer.
+
+> ➤ The RoleManager makes it easy to create roles and manage role membership.
+
+> **Storing additional user profi le data**
+> It’s a very common requirement to store additional information about your users: birthday, Twitter
+handle, site preferences, etc. In the past, adding additional profi le data was unnecessarily diffi cult.
+> In ASP.NET Identity, users are modeled using an Entity Framework Code First model, so adding
+additional information to your users is as simple as adding properties to your ApplicationUser
+class (found in /Models/IdentityModels.cs). For example, to add an Address and Twitter handle
+to your user, youd just add the following properties:
+```c#
+public class ApplicationUser : IdentityUser
+{
+public string Address { get; set; }
+public string TwitterHandle { get; set; }
+}
+```
+- **Какие классы используются для управления ролями и пользователями в ASP.NET Identity?**
+> ASP.NET Identity includes a UserManager and RoleManager which make it easy to perform common
+tasks like creating users and roles, adding users to roles, checking if a user is in a role, etc.
+
+> It’s great that you’ve got these extensibility points when you need them. For the most part, if you’re
+using the standard AccountController and storing user information via Entity Framework, you
+just code away without considering the extensibility points—until you want them.
+
+- **Стороння аутентификация и ее преимущества.**
+> Although traditional membership is a great fi t in a lot of web applications, it comes with some serious
+downsides:
+
+> ➤ Maintaining a local database of usernames and secret passwords is a large security liability.
+Large security breaches involving hundreds of thousands of users’ account information (often
+including unencrypted passwords) have become common. Worse, because many users reuse
+passwords on multiple websites, compromised accounts may affect your users’ security on
+their banking or other sensitive websites.
+
+> ➤ Website registration is annoying. Users have gotten tired of fi lling out forms, complying with
+widely differing password policies, remembering passwords, and worrying whether your
+site is going to keep their information secure. A signifi cant percentage of potential users will
+decide they would rather not bother with registering for your site.
+OAuth and OpenID are open standards for authentication. These protocols allow your users to log
+in to your site using their existing accounts on other trusted sites (called providers), such as Google,
+Twitter, Microsoft, and others.
+
+- **Registering External Login Providers. Configuring OpenID Providers. Configuring OAuth Providers.**
+> You need to explicitly enable external sites for login. Fortunately, this task is extremely simple to do.
+Authorization providers are confi gured in App_Start\Startup.Auth.cs. When you create a new
+External Login via OAuth and OpenID ❘ 177
+application, all authentication providers in Startup.Auth.cs are commented out and will appear as
+follows:
+```c#
+public partial class Startup
+{
+    // For more information on configuring authentication,
+    // please visit http://go.microsoft.com/fwlink/?LinkId=301864
+    public void ConfigureAuth(IAppBuilder app)
+    {
+        // Enable the application to use a cookie to store
+        // information for the signed in user
+        app.UseCookieAuthentication(new CookieAuthenticationOptions
+        {
+            AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie, 
+            LoginPath = new PathString("/Account/Login")
+        });
+        // Use a cookie to temporarily store information about
+        // a user logging in with a third party login provider
+        app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+        // Uncomment the following lines to enable logging in
+        // with third party login providers
+        //app.UseMicrosoftAccountAuthentication(
+        // clientId: "",
+        // clientSecret: "");
+        //app.UseTwitterAuthentication(
+        // consumerKey: "",
+        // consumerSecret: "");
+        //app.UseFacebookAuthentication(
+        // appId: "",
+        // appSecret: "");
+        //app.UseGoogleAuthentication();
+    }
+}
+```
+> Sites that use an OAuth provider (Facebook, Twitter, and Microsoft) require you to register your site
+as an application. When you do, you’ll be provided a client id and a secret. Your site uses these to
+authenticate with the OAuth provider. Sites that implement OpenID (such as Google and Yahoo!) do
+not require you to register an application, and you won’t need a client id or secret.
+
+- **Соображения безопасности при использовании сторонней аутентификации.**
+> Although OAuth and OpenID simplify your site’s security code, they introduce other potential
+attack vectors into your application. If either a provider site or the security communication between
+your sites is compromised, an attacker could either subvert the login to your site or capture the
+user’s information. Continuing to pay attention to security when you’re using delegated authentication
+is important. Security for your site is always your responsibility, even if you’re making use of
+external services for authentication.
+
+> Trusted External Login Providers
+Supporting only providers whose security you trust, which generally means sticking with wellknown
+providers, is important for a couple reasons:
+
+> ➤ When you are redirecting your users to external sites, you want to make sure that these sites
+are not malicious or poorly secured ones that will leak or misuse your users’ login data or
+other information.
+
+> ➤ Authentication providers are giving you information about users—not just their registration
+state, but also e-mail addresses and potentially other provider-specifi c information. Although
+by default this additional information isn’t stored, reading provider data such as e-mail to
+prevent the user from having to re-enter it is not uncommon. A provider could potentially—
+either accidentally or maliciously—return information. Displaying any provider information
+to the user before you store it is generally a good idea.
+
+- **SSL/HTTPS при аутентификации.**
+> The callback from an external provider to your site contains security tokens that allow access to
+your site and contain user information. Transmitting this information over HTTPS to prevent interception
+while this information travels over the Internet is important.
+To enforce HTTPS for this callback, applications that support external logins should require
+HTTPS for access to the AccountController’s Login GET method using the RequireHttps
+attribute:
+```c#
+// GET: /Account/Login
+[RequireHttps]
+[AllowAnonymous]
+public ActionResult Login(string returnUrl)
+{
+    ViewBag.ReturnUrl = returnUrl;
+    return View();
+}
+```
+> Enforcing HTTPS during login to your site causes all calls to external providers to occur over
+HTTPS, which, in turn, causes the providers to make their callbacks to your site using HTTPS.
+Additionally, using HTTPS with Google authentication is important. Google reports a user who
+logs in once via HTTP and later via HTTPS as two different people. Always requiring HTTPS
+prevents this problem.
+
+- **Виды угроз безопасности веб приложений и способы их предотвращения, в частности в контексте ASP.NET MVC.**
+> 
+- **Proper Error Reporting and the Stack Trace. Using Configuration Transforms. Using Retail Deployment Configuration in Production. Using a dedicated Error Loging System.**
+> 207-209
