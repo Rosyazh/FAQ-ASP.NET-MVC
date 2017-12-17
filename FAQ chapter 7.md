@@ -38,11 +38,54 @@ public ActionResult Buy(int id)
     return View(album);
 }
 ```
-> 
+> You accomplish this by putting
+the AuthorizeAttribute on the CheckoutController, like this:
+```c#
+[Authorize]
+public class CheckoutController : Controller
+```
+> This says that all actions in the CheckoutController will allow any registered user, but will not
+allow anonymous access.
 
-> 
+> To register the AuthorizeAttribute as a global fi lter, add it to the global fi lters collection in the
+RegisterGlobalFilters method, located in \App_Start\FilterConfig.cs:
+```c#
+public static void RegisterGlobalFilters(GlobalFilterCollection filters) {
+filters.Add(new System.Web.Mvc.AuthorizeAttribute());
+filters.Add(new HandleErrorAttribute());
+}
+```
+> This applies the AuthorizeAttribute to all controller actions in the application.
 
-> 
+> The obvious problem with a global authentication is that it restricts access to the entire site, including
+the AccountController, which would result in the users’ having to log in before being able
+to register for the site, except they don’t yet have an account—how absurd! Prior to MVC 4, if
+you wanted to use a global fi lter to require authorization, you had to do something special to
+allow anonymous access to the AccountController. A common technique was to subclass the
+AuthorizeAttribute and include some extra logic to selectively allow access to specifi c actions.
+MVC 4 added a new AllowAnonymous attribute. You can place AllowAnonymous on any methods
+(or entire controllers) to opt out of authorization as desired.
+For an example, you can see the default AccountController in a new MVC 5 application using
+Individual Accounts for authentication. All methods that would require external access if the
+AuthorizeAttribute were registered as a global fi lter are decorated with the AllowAnonymous
+attribute. For example, the Login HTTP Get action appears, as follows:
+```c#
+// GET: /Account/Login
+[AllowAnonymous]
+public ActionResult Login(string returnUrl)
+{
+ViewBag.ReturnUrl = returnUrl;
+return View();
+}
+```
+> This way, even if you register the AuthorizeAttribute as a global fi lter, users can access the login
+actions.
+
+> Although AllowAnonymous solves this specifi c problem, it only works with the standard
+AuthorizeAttribute; it won’t necessarily work with custom authorization fi lters. If you’re using
+custom authorization fi lters, you’ll want to use a new feature in MVC 5: override fi lters. These allow
+you to locally override any fi lter (for example, any custom authorization fi lter that derives from
+IAuthorizationFilters).
 
 - Как аттрибут Authorize работает?
 > The AuthorizeAttribute is an authorization fi lter, which means that it executes before the associated
@@ -90,6 +133,7 @@ checked.
 > 6. In the Actions pane, click Disable to disable anonymous authentication.
 
 > **IIS Express**
+
 > Complete the following steps to confi gure Intranet authentication when running under IIS 7
 and IIS 8:
 > 1. Click your project in the Solution Explorer to select the project.
@@ -100,7 +144,75 @@ and IIS 8:
 > > b. Set Windows Authentication to Enabled.
 
 - Как ограничить действия контроллера для определенных ролей и/или пользователей?
+> So far you’ve looked at the use of AuthorizeAttribute to prevent anonymous access to a controller
+or controller action. However, as mentioned, you can also limit access to specifi c users or roles.
+A common example of where this technique is used is in administrative functions.
+
+> Fortunately, AuthorizeAttribute allows you to specify both roles and users, as
+shown here:
+```c#
+[Authorize(Roles="Administrator")]
+public class StoreManagerController : Controller
+```
+This restricts access to the StoreManagerController to users who belong to the Administrator
+role. Anonymous users, or registered users who are not members of the Administrator role, are prevented
+from accessing any of the actions in the StoreManagerController.
+As implied by the name, the Roles parameter can take more than one role. You can pass in a
+comma-delimited list:
+```c#
+[Authorize(Roles="Administrator,SuperAdmin")]
+public class TopSecretController:Controller
+```
+You can also authorize by a list of users:
+```c#
+[Authorize(Users="Jon,Phil,Scott,Brad,David")]
+public class TopSecretController:Controller
+```
+And you can combine them, as well:
+```c#
+[Authorize(Roles="UsersNamedScott", Users="Jon,Phil,Brad,David")]
+public class TopSecretController:Controller
+```
 - Users vs Roles. Roles vs Claims.
+> Managing your permissions based on roles instead of users is generally considered
+a better idea, for several reasons:
+
+> ➤ Users can come and go, and a specifi c user is likely to require (or lose) permissions
+over time.
+
+> ➤ Managing role membership is generally easier than managing user membership.
+If you hire a new offi ce administrator, you can easily add her to an
+Administrator role without a code change. If adding a new administrative
+user to your system requires you to modify all your Authorize attributes and
+deploy a new version of the application assembly, people will laugh at you.
+
+> ➤ Role-based management enables you to have different access lists across
+deployment environments. You might want to grant developers Administrator
+access to a payroll application in your development and stage environments,
+but not in production.
+
+> When you’re creating role groups, consider using privileged-based role groups.
+For example, roles named CanAdjustCompensation and CanEditAlbums are
+more granular and ultimately more manageable than overly generic groups like
+Administrator followed by the inevitable SuperAdmin and the equally inevitable
+SuperSuperAdmin.
+
+> When you head down this direction, you’re bordering on claims-based authorization.
+Under the hood, ASP.NET has supported claims-based authorization since
+.NET 4.5, although it’s not surfaced by AuthorizeAttribute. Here’s the easy
+way to understand the difference between roles and claims: Role membership
+is a simple Boolean—a user either is a member of the role or not. A claim can
+contain a value, not just a simple Boolean. This means that users’ claims might
+include their username, their corporate division, the groups or level of other
+users they are allowed to administer, and so on. So with claims, you wouldn’t
+need a bunch of roles to manage the extent of compensation adjustment powers
+(CanAdjustCompensationForEmployees, CanAdjustCompensationForManagers,
+and so on). A single claim token can hold rich information about exactly which
+employees you rule.
+
+> This means that roles are really a specifi c case of claims, because membership in a
+role is just one simple claim.
+
 - Как добавить дополнительные поля в профайл пользователя?
 - Какие классы используются для управления ролями и пользователями в ASP.NET Identity?
 - Стороння аутентификация и ее преимущества.
