@@ -152,6 +152,10 @@ ModelState.IsValid returns false.
 
 > Объект ModelState сохраняет все значения, которые пользователь ввел для свойств модели, а также все ошибки, связанные с каждым свойством и с моделью в целом. Если в объекте ModelState имеются какие-нибудь ошибки, то свойство ModelState.IsValid возвратит false.
 
+>  The ValidationMessage helper displays error messages associated with a particular piece of view data
+by looking at model state.
+```@Html.ValidationMessageFor(m => m.LastName)```
+
 - **Custom validation logic vs default validation logic.**
 > Хотя встроенные атрибуты валидации охватывают приличное количество ситуаций, которые могут возникнуть, но все же их бывает недостаточно. Но mvc фреймворк настолько гибкий, что позволяет создавать собственные атрибуты валидации и закладывать в них свою логику.
 
