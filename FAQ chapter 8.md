@@ -562,8 +562,8 @@ in mind. Many tools are available you can use to optimize the client-side perfor
 including YSlow for Firebug (see http://developer.yahoo.com/yslow/) and the developer tools
 for Internet Explorer (see http://msdn.microsoft.com/en-us/library/bg182326.aspx). 
 
-> CDN 
-Although you can certainly work with jQuery by serving the jQuery scripts from your own server,
+> **CDN** 
+> Although you can certainly work with jQuery by serving the jQuery scripts from your own server,
 you might instead consider sending a script tag to the client that references jQuery from a content
 delivery network (CDN). A CDN has edge-cached servers located around the world, so there is a
 good chance your client will experience a faster download. Because other sites will also reference
@@ -576,3 +576,62 @@ the following script tag:
 <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"
  type="text/javascript"></script>
  ```
+> **Script Optimizations**
+> Many web developers do not use script tags inside the head element of a document. Instead, they
+place script tags as close as possible to the bottom of a page. The problem with placing script tags 
+inside the <head> tag at the top of the page is that when the browser comes across a script tag, it
+blocks other downloads until after it retrieves the entire script. This blocking behavior can make a
+page load slowly. Moving all your script tags to the bottom of a page (just before the closing body
+tag) yields a better experience for the user.
+> Another optimization technique for scripts is to minimize the number of script tags you send to a
+client. You have to balance the performance gains of minimizing script references versus caching
+individual scripts, but the tools mentioned earlier, like YSlow, can help you make the right decisions.
+ASP.NET MVC 5 has the ability to bundle scripts, so you can combine multiple script fi les into a single
+download for the client. MVC 5 can also minify scripts on the fl y to produce a smaller download.
+ 
+> **Bundling and Minification**
+> Bundling and minifi cation features are provided by classes in the System.Web.Optimization
+namespace. As the namespace implies, these classes are designed to optimize the performance of a
+web page by minifying fi les (reducing their size) and bundling fi les (combining multiple fi les into a
+single download). The combination of bundling and minifi cation generally decreases the amount of
+time needed to load a page into the browser.
+> When you create a new ASP.NET MVC 5 application, you’ll fi nd bundles are automatically
+confi gured for you during application startup. The confi gured bundles will live in a fi le named
+BundleConfig.cs in the App_Start folder of a new project. Inside is code like the following to confi
+gure script bundles (JavaScript) and style bundles (CSS):
+```
+bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+ "~/Scripts/jquery-{version}.js"));
+bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
+ "~/Scripts/jquery.validate*"));
+bundles.Add(new StyleBundle("~/Content/css").Include(
+ "~/Content/bootstrap.css",
+ "~/Content/site.css"));
+ ```
+> A script bundle is a combination of a virtual path (such as ~/bundles/jquery, which is the fi rst
+parameter to the ScriptBundle constructor) and a list of fi les to include in the bundle. The virtual
+path is an identifi er you’ll use later when you output the bundle in a view. The list of fi les in a
+bundle can be specifi ed using one or more calls to the Include method of a bundle, and in the call
+to include you can specify a specifi c fi lename or a fi lename with a wildcard to specify multiple fi les
+at once.
+> In the previous code, the fi le specifi er ~/Scripts/jquery.validate* tells the run time to include
+all the scripts matching that pattern, so it picks up both jquery.validate.js and jquery.
+validate.unobtrusive.js. The run time is smart enough to differentiate between minifi ed and
+unminifi ed versions of a JavaScript library based on standard JavaScript naming conventions. It also
+automatically ignores fi les that include IntelliSense documentation or source map information. You
+can create and modify your own bundles in BundleConfig.cs. Custom bundles can include custom
+minifi cation logic, which can do quite a bit—for example, it takes a few lines of code and a NuGet
+package to create a custom bundle that compiles CoffeeScript to JavaScript, then passes it to the
+standard minifi cation pipeline.
+> After you have bundles confi gured, you can render the bundles with Scripts and Styles helper
+classes. The following code outputs the jQuery bundle and the default application style sheet:
+```c#
+@Scripts.Render("~/bundles/jquery")
+@Styles.Render("~/Content/css")
+```
+> The parameter you pass to the Render methods is the virtual path used to create a bundle. When
+the application is running in debug mode (specifi cally, the debug fl ag is set to true in the compilation
+section of web.config), the script and style helpers render a script tag for each individual fi le
+registered in the bundle. When the application is running in release mode, the helpers combine all
+the fi les in a bundle into a single download and place a single link or script element in the output.
+In release mode, the helpers also minify fi les by default to reduce the download size.
