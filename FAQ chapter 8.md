@@ -197,16 +197,382 @@ are included in the proper order. By default, the _Layout view in a new MVC 5 ap
 the script toward the bottom of the page, just before the closing body tag.
 
 - **Опишите назначение каждого файла, включенного в каталог Scripts приложения ASP.NET MVC по умолчанию.**
-# 225
-- Ajax helpers и их включение в проект.
-- Как работает Ajax хелпер действия?
-- Ajax хелпер формы и как он работает.
-- Подключение валидации на стороне клиента для представления, с использованием хелпером, для всего приложения.
-- Хелперы и валидация.
-- Кастомная валидация на стороне клиента. Какие преимущества(о) можете отметить по сравнению с серверной валидацией?
-- jQuery UI.
-- JSON объект как результат выполнения метода действия. JSON and Client-Side Templates (общее понимание). Adding Templates (общее понимание).
-- jQuery альтернатива Ajax хелперу формы (общее понимание).
-- jQuery.ajax (общее понимание).
-- Bootstrap Plugins (общее понимание).
-- Improving Performance: CDNs, Script Optimizations, Bundling and Minification.
+> _references.js is just a list of JavaScript libraries in your project, written out using triple-slash
+(///) comments. Visual Studio uses it to determine which libraries to include in global JavaScript
+IntelliSense throughout your project (in addition to other in-page script references, which are
+also included at the individual view level).
+> There are also several .min.js files. Each contains a minimized version of another script file.
+JavaScript minimization is the process of shrinking a JavaScript file by removing comments, thus
+shortening variable names, and other processes that reduce the file size. Minimized JavaScript files
+are great for performance because they cut down on bandwidth and client-side parsing, but they’re
+not easy to read. For this reason, both minimized and unminimized versions are included in the
+project templates. This allows you to read and debug using the easy-to-read, commented versions,
+but gain the performance benefits of using minimized files in production. This is all handled for you
+by the ASP.NET bundling and minification system—in debug mode it serves the unminimized versions;
+in release mode it automatically finds and serves the .min.js versions.
+> jQuery also includes a .min.map.js version. This is a source map file. Source maps are an emerging
+standard, which allows browsers to map minified, compiled code back to the original code that was
+authored. If you’re debugging JavaScript in a browser that supports source maps and one is available
+for the script you’re debugging, it shows you the original source.
+
+> Bootstrap.js contains a set of jQuery-based plugins that complement Bootstrap by adding some
+additional interactive behavior. For example, the Modals plugin shows simple modal displays using
+Bootstrap styles, using jQuery for display and events. библиотека, позволяющая создавать адаптивные веб-приложения с использованием css-фреймворка bootstrap
+
+> Respond.js is a tiny JavaScript library, included because it’s required by Bootstrap. It’s what’s
+known as a polyfill: a JavaScript library that adds support for newer browser standards to older
+browsers. In the case of Respond.js, that missing standard is min-width and max-width CSS3
+media query support for Internet Explorer 6–8. This allows Bootstrap’s responsive CSS to work
+great on Internet Explorer 6–8, and it’s ignored in newer browsers that have native support for
+CSS3 media queries. позволяет использовать правила media queries CSS3 в старых браузерах, которые напрямую не поддерживают данную возможность
+
+> Modernizr.js is a JavaScript library that helps you build modern applications by modernizing
+older browsers. For example, one important job of Modernizr is to enable the new HTML 5 elements
+(such as header, nav, and menu) on browsers that don’t natively support HTML 5 elements
+(like Internet Explorer 6). Modernizr also allows you to detect whether advanced features such as
+geolocation and the drawing canvas are available in a particular browser. библиотека, позволяющая определить, поддерживает ли браузер те или иные возможности HTML5 и CSS3
+
+> The files with “unobtrusive” in the name are those written by Microsoft. The unobtrusive scripts
+integrate with jQuery and the MVC framework to provide the unobtrusive JavaScript features
+mentioned earlier. You’ll need to use these files if you want to use Ajax features of the ASP.NET
+MVC framework. предоставляет поддержку ненавязчивой валидации модели
+
+> jquery.validate.js - представляет функционал для валидации на стороне клиента
+
+> jquery-1.10.2.intellisense.js и jquery.validate-vsdoc.js - используются для поддержки документации и IntelliSense по соответствующим библиотекам в Visual Studio
+
+> jquery-1.10.2.js - базовая библиотека jQuery, на которую опираются большинство других скриптов. В данном случае используется версия 1.10.2.
+
+- **Ajax helpers и их включение в проект.**
+> You’ve seen the HTML helpers in ASP.NET MVC. You can use the HTML helpers to create forms
+and links that point to controller actions. You also have a set of Ajax helpers in ASP.NET MVC. Ajax
+helpers also create forms and links that point to controller actions, but they behave asynchronously.
+When using these helpers, you don’t need to write any script code to make the asynchrony work.
+Behind the scenes, these Ajax helpers depend on the unobtrusive MVC extensions for jQuery. To
+use the helpers, you need to install the jquery.unobtrusive-ajax.js script in your project and add
+script references to your views. This is a change from previous versions of MVC, which included the
+script in the project template as well as a script reference in the _Layout view. 
+
+> The Ajax functionality of the Ajax helpers will not work without a reference
+to the jquery.unobtrusive-ajax.js script. If you’re having trouble
+with the Ajax helpers, this is the fi rst thing you should check.
+
+> Fortunately, adding the unobtrusive Ajax script to your project is really easy using NuGet. Rightclick
+your project, open the Manage NuGet Packages dialog, and search for Microsoft jQuery
+Unobtrusive Ajax. Alternatively, you can install it via the Package Manager
+Console using the following command: Install-Package Microsoft.jQuery.Unobtrusive.Ajax.
+
+> You can either add a script reference to the application’s _Layout view or just in views that will be
+using the Ajax helpers. Unless you’re making a lot of Ajax requests throughout your site, I recommend
+just adding script references to individual views.
+This example shows how to add an Ajax request to the Scripts section of the Home Index view
+(Views/Home/Index.cshtml). You can manually type in the script reference, or you can drag and
+drop jQuery file from Solution Explorer into the view and Visual Studio will automatically add the
+script reference.
+> The updated view should now include the following script references (assuming you followed the
+earlier example, which added the MusicScripts.js reference):
+```html
+@section Scripts {
+ <script src="~/Scripts/App/MusicScripts.js"></script>
+ <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"> </script>
+}
+```
+
+- **Как работает Ajax хелпер действия?**
+> The ActionLink method of the Ajax property creates an anchor tag with asynchronous
+behavior. Imagine you want to add a “daily deal” link at the bottom of the opening page
+for the MVC Music Store. When users click the link, you don’t want them to navigate to a
+new page, but you want the existing page to automatically display the details of a heavily
+discounted album.
+To implement this behavior, you can add the following code into the Views/Home/Index.cshtml
+view, just below the existing album list:
+```html
+<div id="dailydeal">
+ @Ajax.ActionLink("Click here to see today's special!",
+ "DailyDeal",
+ null,
+ new AjaxOptions
+ {
+ UpdateTargetId = "dailydeal",
+ InsertionMode = InsertionMode.Replace,
+ HttpMethod = "GET"
+ },
+ new {@class = "btn btn-primary"})
+</div>
+```
+The fi rst parameter to the ActionLink method specifi es the link text, and the second parameter
+is the name of the action you want to invoke asynchronously. Like the HTML helper of the same
+name, the Ajax ActionLink has various overloads you can use to pass a controller name, route values,
+and HTML attributes.
+One signifi cantly different type of parameter is the AjaxOptions parameter. The options parameter
+specifi es how to send the request, and what will happen with the result the server returns. Options
+also exist for handling errors, displaying a loading element, displaying a confi rmation dialog, and
+more. In the above code listing, you are using options to specify that you want to replace the element
+with an id of "dailydeal" using whatever response comes from the server.
+The fi nal parameter, htmlAttributes, specifi es the HTML class you’ll use for the link to apply a
+basic Bootstrap button style.
+To have a response available, you’ll need a DailyDeal action on the HomeController:
+```c#
+public ActionResult DailyDeal()
+ {
+ var album = GetDailyDeal();
+ return PartialView("_DailyDeal", album);
+ }
+ // Select an album and discount it by 50%
+ private Album GetDailyDeal()
+ {
+ var album = storeDB.Albums
+ .OrderBy(a => System.Guid.NewGuid())
+ .First();
+ album.Price *= 0.5m;
+ return album;
+ }
+ ```
+- **Ajax хелпер формы и как он работает.**
+> Let’s imagine another scenario for the front page of the music store. You want to give the user the
+ability to search for an artist. Because you need user input, you must place a form tag on the page,
+but not just any form—an asynchronous form:
+```html
+<div class="panel panel-default">
+ <div class="panel-heading">Artist search</div>
+ <div class="panel-body">
+ @using (Ajax.BeginForm("ArtistSearch", "Home",
+ new AjaxOptions
+ {
+ InsertionMode = InsertionMode.Replace,
+ HttpMethod = "GET",
+ OnFailure = "searchFailed",
+ LoadingElementId = "ajax-loader",
+ UpdateTargetId = "searchresults",
+ }))
+ {
+ <input type="text" name="q" />
+ <input type="submit" value="search" />
+ <img id="ajax-loader"
+ src="@Url.Content("~/Images/ajax-loader.gif")"
+ style="display:none" />
+ }
+ <div id="searchresults"></div>
+ </div>
+</div>
+```
+- **Подключение валидации на стороне клиента для представления, с использованием хелпером, для всего приложения.**
+> 
+- **Хелперы и валидация.**
+- **Кастомная валидация на стороне клиента. Какие преимущества(о) можете отметить по сравнению с серверной валидацией?**
+> The IClientValidatable interface defi nes a single method: GetClientValidationRules.
+When the MVC framework fi nds a validation object with this interface present, it
+invokes GetClientValidationRules to retrieve—you guessed it—a sequence of
+ModelClientValidationRule objects. These objects carry the metadata, or the rules, the
+framework sends to the client.
+> You can implement the interface for the custom validator with the following code:
+```c#
+public class MaxWordsAttribute : ValidationAttribute,
+ IClientValidatable
+{
+ public MaxWordsAttribute(int wordCount)
+ : base("Too many words in {0}")
+ {
+ WordCount = wordCount;
+ }
+ public int WordCount { get; set; }
+ protected override ValidationResult IsValid(
+ object value,
+ ValidationContext validationContext)
+ {
+ if (value != null)
+ {
+ var wordCount = value.ToString().Split(' ').Length;
+ if (wordCount > WordCount)
+ {
+ return new ValidationResult(
+ FormatErrorMessage(validationContext.DisplayName)
+ );
+ }
+ }
+ return ValidationResult.Success;
+ }
+ public IEnumerable<ModelClientValidationRule>
+ GetClientValidationRules(
+ ModelMetadata metadata, ControllerContext context)
+ {
+ var rule = new ModelClientValidationRule();
+ rule.ErrorMessage =
+ FormatErrorMessage(metadata.GetDisplayName());
+ rule.ValidationParameters.Add("wordcount", WordCount);
+ rule.ValidationType = "maxwords";
+ yield return rule;
+ }
+}
+ ```
+- **jQuery UI.**
+> jQuery UI is a jQuery plugin that includes both effects and widgets. Like all plugins it integrates
+tightly with jQuery and extends the jQuery API. As an example, let’s return to the fi rst bit of code
+in this chapter—the code to animate album items on the front page of the store:
+```js
+$(function () {
+ $("#album-list img").mouseover(function () {
+ $(this).animate({ height: '+=25', width: '+=25' })
+ .animate({ height: '-=25', width: '-=25' });
+ });
+});
+```
+> Instead of the verbose animation, let’s take a look at how you would use jQuery UI to make
+the album bounce. The fi rst step is to install the jQuery UI Combined Library NuGet package
+(Install-Package jQuery.UI.Combined). This package includes the script fi les (minifi ed and
+unminifi ed), CSS fi les, and images used by the core jQueryUI plugins.
+> Next, you need to include a script reference to the jQuery UI library. You could either add it immediately
+after the jQuery bundle in the _Layout view, or in an individual view where you’ll be using
+it. Because you’re going to use it in your MusicScripts and you want to use those throughout the
+site, add the reference to the _Layout as shown in the following:
+```
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+ <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
+@RenderSection("scripts", required: false)
+```
+> Now you can change the code inside the mouseover event handler:
+```js
+$(function () {
+ $("#album-list img").mouseover(function () {
+ $(this).effect("bounce");
+ });
+});
+```
+- **JSON объект как результат выполнения метода действия. JSON and Client-Side Templates (общее понимание). Adding Templates (общее понимание).**
+- **jQuery альтернатива Ajax хелперу формы (общее понимание).**
+> Let’s change the
+ArtistSearch action of the HomeController to return JSON instead of a partial view:
+public ActionResult ArtistSearch(string q)
+{
+ var artists = GetArtists(q);
+ return Json(artists, JsonRequestBehavior.AllowGet);
+}
+Now you’ll need to change the script to expect JSON instead of HTML. jQuery provides a method
+named getJSON that you can use to retrieve the data:
+$("#artistSearch").submit(function (event) {
+ event.preventDefault();
+ var form = $(this);
+ $.getJSON(form.attr("action"), form.serialize(), function (data)
+ // now what?
+ });
+});
+> The code didn’t change dramatically from the previous version. Instead of calling load, you call
+getJSON. The getJSON method does not execute against the matched set. Given a URL and some
+query string data, the method issues an HTTP GET request, deserializes the JSON response into an
+object, and then invokes the callback method passed as the third parameter. What do you do inside
+of the callback? You have JSON data—an array of artists—but no markup to present the artists.
+This is where templates come into play. A template is markup embedded inside a script tag. The following
+code shows a template, as well as the search result markup where the results should display:
+```html
+<script id="artistTemplate" type="text/html">
+ <ul>
+ {{#artists}}
+ <li>{{Name}}</li>
+ {{/artists}}
+ </ul>
+</script>
+<div id="searchresults">
+</div>
+```
+> Notice that the script tag is of type text/html. This type ensures the browser does not try to interpret
+the contents of the script tag as real code. The {{#artists}} expression tells the template
+engine to loop through an array named artists on the data object you’ll use to render the template.
+The {{Name}} syntax is a binding expression. The binding expression tells the template engine to
+fi nd the Name property of the current data object and place the value of the property between <li>
+and </li>. The result will make an unordered list from JSON data. You can include the template
+directly below the form, as shown in the following code:
+```html
+<form id="artistSearch" method="get" action="@Url.Action("ArtistSearch", "Home")">
+ <input type="text" name="q"
+ data-autocomplete-source="@Url.Action("QuickSearch", "Home")" />
+ <input type="submit" value="search" />
+ <img id="ajax-loader"
+ src="@Url.Content("~/Content/Images/ajax-loader.gif")"
+ style="display:none" />
+</form>
+<script id="artistTemplate" type="text/html">
+ <ul>
+ {{#artists}}
+ <li>{{Name}}</li>
+ {{/artists}}
+ </ul>
+</script>
+<div id="searchresults"></div>
+```
+> To use the template, you need to select it inside the getJSON callback and tell Mustache to render
+the template into HTML:
+```js
+$("#artistSearch").submit(function(event) {
+ event.preventDefault();
+ var form = $(this);
+ $.getJSON(form.attr("action"), form.serialize(), function(data) {
+ var html = Mustache.to_html($("#artistTemplate").html(),
+ { artists: data });
+ $("#searchresults").empty().append(html);
+ });
+});
+```
+> The to_html method of Mustache combines the template with the JSON data to produce markup.
+> The code takes the template output and places the output in the search results element.
+
+- **jQuery.ajax (общее понимание).**
+> When you need complete control over an Ajax request, you can turn to the jQuery ajax method.
+The ajax method takes an options parameter where you can specify the HTTP verb (such as GET
+or POST), the timeout, an error handler, and more. All the other asynchronous communication
+methods you’ve seen (load and getJSON) ultimately call down to the ajax method.
+Using the ajax method, you can achieve all the functionality you had with the Ajax helper and still
+use client-side templates:
+```js
+$("#artistSearch").submit(function (event) {
+ event.preventDefault();
+ var form = $(this);
+ $.ajax({
+ url: form.attr("action"),
+ data: form.serialize(),
+ beforeSend: function () {
+ $("#ajax-loader").show();
+ },
+ complete: function () {
+ $("#ajax-loader").hide();
+ },
+ error: searchFailed,
+ success: function (data) {
+ var html = Mustache.to_html($("#artistTemplate").html(),
+ { artists: data });
+ $("#searchresults").empty().append(html);
+ }
+ });
+});
+```
+> The call to ajax is verbose because you customize quite a few settings. The url and data properties
+are just like the parameters you passed to load and getJSON. What the ajax method gives you is the
+ability to provide callback functions for beforeSend and complete. You will respectively show and
+hide the animated, spinning gif during these callbacks to let the user know a request is outstanding.
+jQuery will invoke the complete callback even if the call to the server results in an error. Of the
+next two callbacks, error and success, however, only one can win. If the call fails, jQuery calls the
+searchFailed error function you already defi ned in the “Ajax Forms” section. If the call succeeds,
+you will render the template as before.
+
+
+- **Bootstrap Plugins (общее понимание).**
+- **Improving Performance: CDNs, Script Optimizations, Bundling and Minification.**
+> When you start sending large amounts of script code to the client, you have to keep performance
+in mind. Many tools are available you can use to optimize the client-side performance of your site,
+including YSlow for Firebug (see http://developer.yahoo.com/yslow/) and the developer tools
+for Internet Explorer (see http://msdn.microsoft.com/en-us/library/bg182326.aspx). 
+
+> CDN 
+Although you can certainly work with jQuery by serving the jQuery scripts from your own server,
+you might instead consider sending a script tag to the client that references jQuery from a content
+delivery network (CDN). A CDN has edge-cached servers located around the world, so there is a
+good chance your client will experience a faster download. Because other sites will also reference
+jQuery from CDNs, the client might already have the fi le cached locally. Plus, it’s always great when
+someone else can save you the bandwidth cost of downloading scripts.
+> Microsoft is one such CDN provider you can use. The Microsoft CDN hosts all the fi les used in this
+chapter. If you want to serve jQuery from the Microsoft CDN instead of your server, you can use
+the following script tag:
+```html
+<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"
+ type="text/javascript"></script>
+ ```
