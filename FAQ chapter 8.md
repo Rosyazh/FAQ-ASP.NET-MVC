@@ -56,17 +56,13 @@ $("#header > div") - Find all <div> elements that are children of the element wi
 "header"
 $("a:even") - Find evenly numbered anchor tags
 ```
-> Another one of jQuery’s strengths is the API it provides for subscribing to events in the DOM.
-Although you can use a generic on method to capture any event using an event name specified as
+> For subscribing to events in the DOM you can use a generic `on` method to capture any event using an event name specified as
 a string, jQuery also provides dedicated methods for common events, such as click, blur, and
 submit.
 
 > After you have some DOM elements selected, or are inside an event handler, jQuery makes
 manipulating elements on a page easy. You can read the values of their attributes, set the values of
-their attributes, add CSS classes to or remove them from the element, and more. The following code
-adds the highlight class to or removes it from anchor tags on a page as the user’s mouse moves
-through the element. The anchor tags should appear differently when users move their mouse over
-the tag (assuming you have a highlight style set up appropriately).
+their attributes, add CSS classes to or remove them from the element, and more.
 ```js
 $("a").mouseover(function () {
 $(this).addClass("highlight");
@@ -109,8 +105,8 @@ things, such as animating images.
 
 > ASP.NET MVC 5 takes an unobtrusive approach to JavaScript. Instead of emitting JavaScript code
 into a view to enable features such as client-side validation, the framework sprinkles metadata into
-HTML attributes. Using jQuery, the framework can fi nd and interpret the metadata, and then
-attach behaviors to elements, all using external script fi les. Thanks to unobtrusive JavaScript, the
+HTML attributes. Using jQuery, the framework can find and interpret the metadata, and then
+attach behaviors to elements, all using external script files. Thanks to unobtrusive JavaScript, the
 Ajax features of ASP.NET MVC support progressive enhancement. If the user’s browser doesn’t
 support scripting, your site will still work (they just won’t have the “nice to have” features such as
 client validation).
@@ -139,13 +135,24 @@ script references so you can make updates in one place.
 <script src="@Url.Content("~/scripts/jquery.validate.min.js")" type="text/javascript"></script>
 ```
 - **Опишите шаги включения jQuery в проект и представление, при которых обновление jQuery до следующей версии потребует минимальных усилий и времени. Зависимости библиотек. Хорошая практика добавления кастомных скриптов в проект.**
-> 220
+> The jQuery library is actually included in the ASP.NET project templates using a NuGet package.
+This is so you can update to a newer version of jQuery using the standard NuGet package update
+mechanisms. The combination of NuGet-based script inclusion and version-independent bundle
+references means you can very easily update your project to the newest version of jQuery. Of course,
+you must still test that your jQuery-based code works well with the new version of jQuery, but you
+won’t have to spend time with busywork to download and add the script, and then manually change
+script references.
+> However, the real value of using the jQuery NuGet package is dependency checking. Any NuGet
+packages with jQuery-based libraries indicate which versions of jQuery they are compatible with,
+ensuring that they’re all kept in sync. For example, if you update the jQuery Validation package
+(discussed later in this chapter), NuGet ensures that the new version of jQuery Validation to which
+you’re upgrading continues to work with your installed jQuery version.
 
 >  The Scripts
-directory in a new project already includes more than a dozen script fi les that you didn’t write (often
-called vendor scripts), creating a separate application-specifi c subdirectory for your custom scripts is
+directory in a new project already includes more than a dozen script files that you didn’t write (often
+called vendor scripts), creating a separate application-specific subdirectory for your custom scripts is
 a good practice. This makes it obvious to both you and other developers who work with your code
-which scripts are libraries and which are custom application specifi c. A common convention is to
+which scripts are libraries and which are custom application specific. A common convention is to
 place your custom scripts in a /Scripts/App subdirectory.
 
 - **Порядок загрузки скриптов в представление.**
@@ -168,10 +175,10 @@ discussed next.
 > Rather than just writing out script tags inline in individual views, you can inject scripts into the
 output using defi ned Razor sections where scripts should appear. You can add your own custom
 sections, but the default _Layout view in a new ASP.NET MVC 5 application includes a section
-specifi cally for you to include scripts that depend on jQuery. The name of the section is Scripts,
+specifically for you to include scripts that depend on jQuery. The name of the section is Scripts,
 and it will appear after jQuery is loaded so that your custom scripts can take a dependency
 on jQuery.
-Inside of any content view, you can now add a scripts section to inject view-specifi c scripts. This
+> Inside of any content view, you can now add a scripts section to inject view-specific scripts. This
 example shows how to place it at the bottom of the /Views/Home/Index.cshtml view:
 ```html
 <ul class="row list-unstyled" id="album-list">
@@ -479,8 +486,8 @@ code shows a template, as well as the search result markup where the results sho
 the contents of the script tag as real code. The {{#artists}} expression tells the template
 engine to loop through an array named artists on the data object you’ll use to render the template.
 The {{Name}} syntax is a binding expression. The binding expression tells the template engine to
-fi nd the Name property of the current data object and place the value of the property between <li>
-and </li>. The result will make an unordered list from JSON data. You can include the template
+fi nd the Name property of the current data object and place the value of the property between `<li>`
+and `</li>`. The result will make an unordered list from JSON data. You can include the template
 directly below the form, as shown in the following code:
 ```html
 <form id="artistSearch" method="get" action="@Url.Action("ArtistSearch", "Home")">
@@ -567,7 +574,7 @@ for Internet Explorer (see http://msdn.microsoft.com/en-us/library/bg182326.aspx
 you might instead consider sending a script tag to the client that references jQuery from a content
 delivery network (CDN). A CDN has edge-cached servers located around the world, so there is a
 good chance your client will experience a faster download. Because other sites will also reference
-jQuery from CDNs, the client might already have the fi le cached locally. Plus, it’s always great when
+jQuery from CDNs, the client might already have the file cached locally. Plus, it’s always great when
 someone else can save you the bandwidth cost of downloading scripts.
 > Microsoft is one such CDN provider you can use. The Microsoft CDN hosts all the fi les used in this
 chapter. If you want to serve jQuery from the Microsoft CDN instead of your server, you can use
@@ -577,28 +584,27 @@ the following script tag:
  type="text/javascript"></script>
  ```
 > **Script Optimizations**
-> Many web developers do not use script tags inside the head element of a document. Instead, they
-place script tags as close as possible to the bottom of a page. The problem with placing script tags 
+> Moving all your script tags to the bottom of a page (just before the closing body
+tag), cuz the problem with placing script tags 
 inside the <head> tag at the top of the page is that when the browser comes across a script tag, it
 blocks other downloads until after it retrieves the entire script. This blocking behavior can make a
-page load slowly. Moving all your script tags to the bottom of a page (just before the closing body
-tag) yields a better experience for the user.
+page load slowly.
 > Another optimization technique for scripts is to minimize the number of script tags you send to a
 client. You have to balance the performance gains of minimizing script references versus caching
 individual scripts, but the tools mentioned earlier, like YSlow, can help you make the right decisions.
-ASP.NET MVC 5 has the ability to bundle scripts, so you can combine multiple script fi les into a single
-download for the client. MVC 5 can also minify scripts on the fl y to produce a smaller download.
  
 > **Bundling and Minification**
-> Bundling and minifi cation features are provided by classes in the System.Web.Optimization
+> ASP.NET MVC 5 has the ability to bundle scripts, so you can combine multiple script fi les into a single
+download for the client. MVC 5 can also minify scripts on the fly to produce a smaller download.
+
+> Bundling and minification features are provided by classes in the System.Web.Optimization
 namespace. As the namespace implies, these classes are designed to optimize the performance of a
-web page by minifying fi les (reducing their size) and bundling fi les (combining multiple fi les into a
+web page by minifying files (reducing their size) and bundling files (combining multiple files into a
 single download). The combination of bundling and minifi cation generally decreases the amount of
 time needed to load a page into the browser.
-> When you create a new ASP.NET MVC 5 application, you’ll fi nd bundles are automatically
-confi gured for you during application startup. The confi gured bundles will live in a fi le named
-BundleConfig.cs in the App_Start folder of a new project. Inside is code like the following to confi
-gure script bundles (JavaScript) and style bundles (CSS):
+> When you create a new ASP.NET MVC 5 application, you’ll find bundles are automatically
+configured for you during application startup. The configured bundles will live in a file named
+BundleConfig.cs in the App_Start folder of a new project. Inside is code like the following to configure script bundles (JavaScript) and style bundles (CSS):
 ```
 bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
  "~/Scripts/jquery-{version}.js"));
@@ -608,16 +614,16 @@ bundles.Add(new StyleBundle("~/Content/css").Include(
  "~/Content/bootstrap.css",
  "~/Content/site.css"));
  ```
-> A script bundle is a combination of a virtual path (such as ~/bundles/jquery, which is the fi rst
-parameter to the ScriptBundle constructor) and a list of fi les to include in the bundle. The virtual
-path is an identifi er you’ll use later when you output the bundle in a view. The list of fi les in a
-bundle can be specifi ed using one or more calls to the Include method of a bundle, and in the call
-to include you can specify a specifi c fi lename or a fi lename with a wildcard to specify multiple fi les
+> A script bundle is a combination of a virtual path (such as ~/bundles/jquery, which is the first
+parameter to the ScriptBundle constructor) and a list of files to include in the bundle. The virtual
+path is an identifier you’ll use later when you output the bundle in a view. The list of files in a
+bundle can be specified using one or more calls to the Include method of a bundle, and in the call
+to include you can specify a specific filename or a filename with a wildcard to specify multiple files
 at once.
-> In the previous code, the fi le specifi er ~/Scripts/jquery.validate* tells the run time to include
+> In the previous code, the file specifier ~/Scripts/jquery.validate* tells the run time to include
 all the scripts matching that pattern, so it picks up both jquery.validate.js and jquery.
-validate.unobtrusive.js. The run time is smart enough to differentiate between minifi ed and
-unminifi ed versions of a JavaScript library based on standard JavaScript naming conventions. It also
+validate.unobtrusive.js. The runtime is smart enough to differentiate between minified and
+unminified versions of a JavaScript library based on standard JavaScript naming conventions. It also
 automatically ignores fi les that include IntelliSense documentation or source map information. You
 can create and modify your own bundles in BundleConfig.cs. Custom bundles can include custom
 minifi cation logic, which can do quite a bit—for example, it takes a few lines of code and a NuGet
