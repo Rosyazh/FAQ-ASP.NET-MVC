@@ -358,15 +358,475 @@ literal values must have a match for each of the route parameter values when mat
 URL.
 
 - **Традиционная маршрутизация в ASP.NET MVC (не посредством аттрибутов), Route Defaults, Route Constraints, ordering route definitions,**
+> 
 
+> *Route Defaults*
+> With an attribute route, you would make the {id} parameter optional by changing it to {id?}
+inline in the route template. Traditional routing takes a different approach. Instead of putting
+this information inline as part of the route template, traditional routing puts it in a separate
+argument after the route template. To make {id} optional in traditional routing, you can defi ne
+the route like this:
+```c#
+routes.MapRoute("simple", "{controller}/{action}/{id}",
+new {id = UrlParameter.Optional});
+```
+> The third parameter to MapRoute is for default values. The {id = UrlParameter.Optional} snippet
+defi nes a default value for the {id} parameter. Unlike attribute routing, the relationship between
+optional and default values is obvious here. An optional parameter is simply a parameter with the
+special default value of UrlParameter.Optional, and that’s exactly how it’s specifi ed in a traditional
+route defi nition.
+> This now allows you to call the List action method, using the URL /albums/list, which satisfi es
+your goal. As in attribute routing, you can also provide multiple default values. The following snippet
+demonstrates adding a default value for the {action} parameter:
+```c#
+routes.MapRoute("simple",
+"{controller}/{action}/{id}",
+new { id = UrlParameter.Optional, action = "index" });
+```
+> Attribute routing would have placed this default inline, using the syntax {action=Index}. Once
+again, traditional routing uses a different style. You specify default and optional values in a separate
+argument used just for this purpose.
+> The earlier example supplies a default value for the {action} parameter within the URL via the
+Defaults dictionary property of the Route class. Typically the URL pattern of {controller}/
+{action} would require a two-segment URL in order to be a match. But by supplying a default
+value for the second parameter, this route no longer requires that the URL contain two segments to
+be a match. The URL may now simply contain the {controller} parameter and omit the {action}
+parameter to match this route. In that case, the {action} value is supplied via the default value
+rather than the incoming URL. Though the syntax is different, the functionality provided by default
+values works exactly as it did with attribute routing.
+> Let’s revisit the Table 9-3 on route URL patterns and what they match, and now throw defaults into
+the mix as shown in the following examples:
+```c#
+routes.MapRoute("defaults1",
+"{controller}/{action}/{id}",
+new {id = UrlParameter.Optional});
+routes.MapRoute("defaults2",
+"{controller}/{action}/{id}",
+new {controller = "home",
+action = "index",
+id = UrlParameter.Optional});
+```
+> The defaults1 route matches the following URLs:
+```
+/albums/display/123
+/albums/display
+```
+> The defaults2 route matches the following URLs:
+```
+/albums/display/123
+/albums/display
+/albums
+/
+```
+> Default values even allow you to map URLs that don’t include controller or action parameters at
+all in the route template. For example, the following route has no parameters at all; instead, the controller
+and action parameters are provided to MVC by using defaults:
+```c#
+routes.MapRoute("static",
+"welcome",
+new { controller = "Home", action = "index" });
+```
+> Just like with attribute routing, remember that the position of a default value relative to other route
+parameters is important. For example, given the URL pattern {controller}/{action}/{id}, providing
+a default value for {action} without specifying a default for {id} is effectively the same as
+not having a default value for {action}. Unless both parameters have a default value, a potential
+ambiguity exists, so Routing will ignore the default value on the {action} parameter. When you
+specify a default value for one parameter, make sure you also specify default values for any parameters
+following it, or your default value will largely be ignored. In this case, the default value only
+comes into play when generating URLs, which is covered later in the section “Inside Routing: How
+Routes Generate URLs.”
+
+> *Route Constraints*
 > 
 
 - **Сочетание маршрутизации посредством аттрибутов и традиционной маршрутизации, выбор между двумя подходамик маршрутизации**
+> *Combining Attribute Routing with Traditional Routing*
+> Now you’ve seen both attribute routes and traditional routes. Both support route templates, constraints,
+optional values, and defaults. The syntax is a little different, but the functionality they offer
+is largely equivalent, because under the hood both use the same Routing system.
+> You can use either attribute routing, traditional routing, or both. To use attribute routing, you need
+to have the following line in your RegisterRoutes method (where traditional routes live):
+`routes.MapMvcAttributeRoutes();`
+> Think of this line as adding an über-route that contains all the route attributes inside it. Just like any
+other route, the position of this über-route compared to other routes makes a difference. Routing checks
+each route in order and chooses the fi rst route that matches. If there’s any overlap between a traditional
+route and an attribute route, the fi rst route registered wins. In practice, we recommend putting the
+MapMvcAttributeRoutes call fi rst. Attribute routes are usually more specifi c, and having attribute
+routes come fi rst allows them to take precedence over traditional routes, which are usually more generic.
+> Suppose you have an existing application that uses traditional routing, and you want to add a new
+controller to it that uses attribute routing. That’s pretty easy to do:
+```c#
+routes.MapMvcAttributeRoutes();
+routes.MapRoute("simple",
+"{controller}/{action}/{id}",
+new { action = "index", id = UrlParameter.Optional});
+// Existing class
+public class HomeController : Controller
+{
+public ActionResult Index()
+{
+return View();
+}
+public ActionResult About()
+{
+return View();
+}
+public ActionResult Contact()
+{
+return View();
+}
+}
+[RoutePrefix("contacts")]
+[Route("{action=Index}/{id?}")]
+public class NewContactsController : Controller
+{
+public ActionResult Index()
+{
+// Do some work
+return View();
+}
+public ActionResult Details(int id)
+{
+// Do some work
+return View();
+}
+public ActionResult Update(int id)
+{
+// Do some work
+return View();
+}
+public ActionResult Delete(int id)
+{
+// Delete the contact with this id
+return View();
+}
+}
+```
+
+> *Choosing Attribute Routes or Traditional Routes*
+> Should you use attribute routes or traditional routes? Either option is reasonable, but here are some
+suggestions on when to use each one.
+> Consider choosing traditional routes when:
+
+> ➤ You want centralized confi guration of all your routes.
+
+> ➤ You use custom constraint objects.
+
+> ➤ You have an existing working application you don’t want to change.
+
+> Consider choosing attribute routes when:
+
+> ➤ You want to keep your routes together with your action’s code.
+
+> ➤ You are creating a new application or making signifi cant changes to an existing one.
+
+> The centralized confi guration of traditional routes means there’s one place to go to understand how
+a request maps to an action. Traditional routes also have some more fl exibility than attribute routes.
+For example, adding a custom constraint object to a traditional route is easy. Attributes in C# only
+support certain kinds of arguments, and for attribute routing, that means everything is specifi ed in
+the route template string.
+> On the other hand, attribute routing nicely keeps everything about your controllers together, including
+both the URLs they use and the actions that run. I tend to prefer attribute routing for that
+reason. Fortunately, you can use both and moving a route from one style to the other if you change
+your mind is not difficult.
+
 - **Именованные маршруты их назначение, добавление именнованных маршрутов посредством аттрибутов, именнованные маршруты и хелперы**
+> Routing in ASP.NET doesn’t require that you name your routes, and in many cases it seems to work
+just fi ne without using names. To generate a URL, simply grab a set of route values you have lying
+around, hand it to the Routing engine, and let the Routing engine sort it all out. However, as you’ll
+see in this section, in some cases this can break down due to ambiguities about which route should
+be chosen to generate a URL. Named routes solve this problem by giving precise control over route
+selection when generating URLs.
+For example, suppose an application has the following two traditional routes defined:
+```c#
+public static void RegisterRoutes(RouteCollection routes)
+{
+routes.MapRoute(
+name: "Test",
+url: "code/p/{action}/{id}",
+defaults: new { controller = "Section", action = "Index", id = "" }
+);
+routes.MapRoute(
+name: "Default",
+url: "{controller}/{action}/{id}",
+defaults: new { controller = "Home", action = "Index", id = "" }
+);
+}
+```
+> To generate a hyperlink to each route from within a view, you write the following code:
+```c#
+@Html.RouteLink("to Test", new {controller="section", action="Index", id=123})
+@Html.RouteLink("to Default", new {controller="Home", action="Index", id=123})
+```
+> Notice that these two method calls don’t specify which route to use to generate the links. They
+simply supply some route values and let the ASP.NET Routing engine fi gure it all out. In this example,
+the fi rst method generates a link to the URL /code/p/Index/123 and the second to /Home/
+Index/123, which should match your expectations. This is fi ne for these simple cases, but in some
+situations this can bite you.
+> Suppose you add the following page route at the beginning of your list of routes so that the URL /
+static/url is handled by the page /aspx/SomePage.aspx:
+```c#
+routes.MapPageRoute("new", "static/url", "~/aspx/SomePage.aspx");
+```
+> Note that you can’t put this route at the end of the list of routes within the RegisterRoutes method
+because it would never match incoming requests. A request for /static/url would be matched by
+the default route and never make it through the list of routes to get to the new route. Therefore, you
+need to add this route to the beginning of the list of routes before the default route.
+> Moving this route to the beginning of the defi ned list of routes seems like an innocent enough
+change, right? For incoming requests, this route will match only requests that exactly match /
+static/url but will not match any other requests. This is exactly what you want. However, what
+about generated URLs? If you go back and look at the result of the two calls to Url.RouteLink,
+you’ll fi nd that both URLs are broken:
+`/static/url?controller=section&action=Index&id=123`
+and
+`/static/url?controller=Home&action=Index&id=123`
+> This goes into a subtle behavior of Routing, which is admittedly somewhat of an edge case, but is
+something that people run into from time to time.
+> Typically, when you generate a URL using Routing, the route values you supply are used to “fi ll in”
+the route parameters, as discussed earlier in this chapter.
+> When you have a route with the URL `{controller}/{action}/{id}`, you’re expected to supply
+values for `controller`, `action`, and `id` when generating a URL. In this case, because the new route
+doesn’t have any route parameters, it matches every URL generation attempt because technically,
+“a route value is supplied for each route parameter.” It just so happens that there aren’t any route
+parameters. That’s why all the existing URLs are broken, because every attempt to generate a URL
+now matches this new route.
+> This might seem like a big problem, but the fixis simple: Always use named routes when generating
+URLs. Most of the time, letting Routing sort out which route you want to use to generate a URL
+is really leaving it to chance, which is not something that sits well with the obsessive-compulsive,
+control-freak developer. When generating a URL, you generally know exactly which route you want
+to link to, so you might as well give it a name and use it. If you have a need to use non-named routes
+and are leaving the URL generation entirely up to Routing, we recommend writing unit tests that
+verify the expected behavior of the routes and URL generation within your application.
+> Specifying the name of the route not only avoids ambiguities, but it might even eke out a bit of a
+performance improvement because the Routing engine can go directly to the named route and
+attempt to use it for URL generation.
+> For the previous example, where you generated two links, the following change fi xes the issue. We
+changed the code to use named parameters to make it clear what the route was.
+```c#
+@Html.RouteLink(
+linkText: "route: Test",
+routeName: "test",
+routeValues: new {controller="section", action="Index", id=123}
+)
+@Html.RouteLink(
+linkText: "route: Default",
+routeName: "default",
+routeValues: new {controller="Home", action="Index", id=123}
+)
+```
+> For attribute routes, the name is specified as an optional argument on the attribute:
+`[Route("home/{action}", Name = "home")]`
+> Generating links to attribute routes works the same way as it does for traditional routes.
+For attribute routes, unlike traditional routes, the route name is optional. We recommend leaving it
+out unless you need to generate a link to the route. Under the hood, MVC does a small bit of extra
+work to support link generation for named attribute routes, and it skips that work if the attribute
+route is unnamed.
+
 - **MVC Areas. Areas and attribute routing.**
+> Areas, introduced in ASP.NET MVC 2, allow you to divide your models, views, and controllers into
+separate functional sections. This means you can separate larger or more complex sites into sections,
+which can make them a lot easier to manage.
+
+> *Area Route Registration*
+> You confi gure area routes by creating classes for each area that derive from the AreaRegistration
+class, overriding AreaName and RegisterArea members. In the default project templates for ASP.
+NET MVC, there’s a call to the method AreaRegistration.RegisterAllAreas within the
+Application_Start method in Global.asax.
+
+> *Area Route Conflicts*
+> You might have good reasons to use the same controller name (for example, you don’t want to
+affect your generated route URLs). In that case, you can specify a set of namespaces to use for
+locating controller classes for a particular route. The following code shows how to do that using a
+traditional route:
+```c#
+routes.MapRoute(
+"Default",
+"{controller}/{action}/{id}",
+new { controller = "Home", action = "Index", id = "" },
+new [] { "AreasDemoWeb.Controllers" }
+);
+```
+> The preceding code uses a fourth parameter that is an array of namespace names. The controllers
+for the example project live in a namespace called AreasDemoWeb.Controllers.
+
+> To utilize areas with attribute routing, use the RouteArea attribute. In attribute routing, you don’t
+need to specify the namespace, because MVC can fi gure that out for you (the attribute is on the controller,
+which knows its own namespace). Instead, you specify the name of the AreaRegistration
+in a RouteArea attribute.
+```c#
+[RouteArea("admin")]
+[Route("users/{action}")]
+public class UsersController : Controller
+{
+// Some action methods
+}
+```
+> By default, all attribute routes for this class use the area name as the route prefi x. So the preceding
+route is for URLs like /admin/users/index. If you would rather have a different route prefi x, you
+can use the optional AreaPrefix property:
+```c#
+[RouteArea("admin", AreaPrefix = "manage")]
+[Route("users/{action}")]
+```
+> This code would use URLs like /manage/users/index instead. Just like with prefi xes defi ned by
+RoutePrefix, you can leave the RouteArea prefi x out by starting the route template with the ~/
+characters.
+
 - **Catch-all parameters.**
+> A catch-all parameter allows for a route to match part of a URL with an arbitrary number of
+segments. The value put in the parameter is the rest of the URL path (that is, it excludes the query
+string, if any). A catch-all parameter is permitted only as the last segment of the route template.
+For example, the following traditional route below would handle requests like those shown
+in Table 9-4:
+```c#
+public static void RegisterRoutes(RouteCollection routes)
+{
+routes.MapRoute("catchallroute", "query/{query-name}/{*extrastuff}");
+}
+```
+> Attribute routing uses the same syntax. Just add an asterisk (*) in front of the parameter’s name to
+make it a catch-all parameter.
+
+URL                  | PARAMETER VALUE
+---------------------|----------------------
+/query/select/a/b/c  | extrastuff = "a/b/c"
+/query/select/a/b/c/ | extrastuff = "a/b/c/"
+/query/select/       | extrastuff = null (Route still matches. The catch-all just catches the null string in this case.)
+
 - **Multiple Route Parameters in a Segment.**
+> As mentioned earlier, a route URL may have multiple parameters per segment. For example, all the
+following are valid route URLs:
+
+> ➤ {title}-{artist}
+
+> ➤ Album{title}and{artist}
+
+> ➤ {filename}.{ext}
+
+> To avoid ambiguity, parameters cannot be adjacent. For example, the following are invalid:
+
+> ➤ {title}{artist}
+
+> ➤ Download{filename}{ext}
+
+> When a request comes in, Routing matches literals in the route URL exactly. Route parameters are
+matched greedily, which has the same connotations as it does with regular expressions. In other
+words, the route tries to match as much text as possible with each route parameter.
+> For example, how would the route {filename}.{ext} match a request for /asp.net.mvc.xml? If
+{filename} were not greedy, it would match only "asp" and the {ext} parameter would match
+"net.mvc.xml". But because route parameters are greedy, the {filename} parameter matches
+everything it can: "asp.net.mvc". It cannot match any more because it must leave room for the
+.{ext} portion to match the rest of the URL, "xml."
+
 - **Игнорирование запроса по определенному маршруту.**
+> One way to ensure that Routing ignores such requests is to use the StopRoutingHandler.
+The following example shows adding a route the manual way, by creating a route with a new
+StopRoutingHandler and adding the route to the RouteCollection:
+```c#
+public static void RegisterRoutes(RouteCollection routes)
+{
+routes.Add(new Route
+(
+"{resource}.axd/{*pathInfo}",
+new StopRoutingHandler()
+));
+routes.Add(new Route
+(
+"reports/{year}/{month}"
+, new SomeRouteHandler()
+));
+}
+```
+> If a request for /WebResource.axd comes in, it will match that fi rst route. Because the fi rst route returns
+a StopRoutingHandler, the Routing system will pass the request on to normal ASP.NET processing,
+which in this case falls back to the normal HTTP handler mapped to handle the .axd extension.
+There’s an even easier way to tell Routing to ignore a route, and it’s aptly named IgnoreRoute. It’s
+an extension method that’s added to the RouteCollection type just like MapRoute, which you’ve
+seen before. It is convenient, and using this new method along with MapRoute changes the example
+to look like this:
+```c#
+public static void RegisterRoutes(RouteCollection routes)
+{
+routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+routes.MapRoute("report-route", "reports/{year}/{month}");
+}
+```
+> Isn’t that cleaner and easier to look at? You can fi nd a number of places in ASP.NET MVC where
+extension methods such as MapRoute and IgnoreRoute can make things a bit tidier.
+
 - **Debugging Routes.**
+> When the Route Debugger is enabled it replaces all of your routes’ route handlers with a
+DebugRouteHandler. This route handler traps all incoming requests and queries every route in
+the route table to display diagnostic data on the routes and their route parameters at the bottom
+of the page.
+> To use the Route Debugger, simply use NuGet to install it via the following command in the
+Package Manager Console window in Visual Studio: Install-Package RouteDebugger. This
+package adds the Route Debugger assembly and then adds a setting to the appSettings section of
+web.config used to turn Route Debugger on or off:
+<add key="RouteDebugger:Enabled" value="true" />
+> As long as the Route Debugger is enabled, it will display the route data pulled from the current
+request URL in the address bar (see Figure 9-1). This enables you to type in various URLs in the
+address bar to see which route matches. At the bottom, it shows a list of all defi ned routes in your
+application. This allows you to see which of your routes would match the current URL.
+
 - **URL Generation: Overflow parameters.**
+> Overflow parameters are route values used in URL generation that are not specifi ed in the route’s
+defi nition. To be precise, we mean values in the route’s URL, its defaults dictionary, and its constraints
+dictionary. Note that ambient values are never used as overfl ow parameters.
+Overflow parameters used in route generation are appended to the generated URL as query string
+parameters. Again, an example is most instructive in this case. Assume that the following default
+route is defined:
+```c#
+public static void RegisterRoutes(RouteCollection routes)
+{
+routes.MapRoute(
+"Default",
+"{controller}/{action}/{id}",
+new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+);
+}
+```
+> Suppose you’re generating a URL using this route and you pass in an extra route value, page = 2.
+Notice that the route defi nition doesn’t contain a parameter named “page.” In this example, instead
+of generating a link, you’ll just render out the URL using the `Url.RouteUrl` method.
+`@Url.RouteUrl(new {controller="Report", action="List", page="123"})`
+> The URL generated will be /Report/List?page=123. As you can see, the parameters we specifi ed
+are enough to match the default route. In fact, we’ve specifi ed more parameters than needed. In
+those cases, those extra parameters are appended as query string parameters. The important thing
+to note is that Routing is not looking for an exact match when determining which route is a match.
+It’s looking for a suffi cient match. In other words, as long as the specifi ed parameters meet the
+route’s expectations, it doesn’t matter if extra parameters are specified.
+
 - **Custom Route Constraints.**
+> Routing provides an IRouteConstraint interface with a single Match method. Here’s a look at the
+interface defi nition:
+```c#
+public interface IRouteConstraint
+{
+bool Match(HttpContextBase httpContext, Route route, string parameterName,
+RouteValueDictionary values, RouteDirection routeDirection);
+}
+```
+> When Routing evaluates route constraints, and a constraint value implements IRouteConstraint,
+it causes the route engine to call the IRouteConstraint.Match method on that route constraint to
+determine whether the constraint is satisfi ed for a given request.
+> Route constraints are run for both incoming URLs and while generating URLs. A custom route
+constraint will often need to inspect the routeDirection parameter of the Match method to apply
+different logic depending on when it is being called.
+> Routing itself provides one implementation of this interface in the form of the
+HttpMethodConstraint class. This constraint allows you to specify that a route should match only
+requests that use a specific set of HTTP methods (verbs).
+> For example, if you want a route to respond only to GET requests, but not POST, PUT, or DELETE
+requests, you could defi ne the following route:
+```c#
+routes.MapRoute("name", "{controller}", null,
+new { httpMethod = new HttpMethodConstraint("GET")} );
+```
+> MVC also provides a number of custom constraints in the System.Web.Mvc.Routing.Constraints
+namespace. These are where the inline constraints used by attribute routing live, and you can use
+them in traditional routing as well. For example, to use attribute routing’s {id:int} inline constraint
+in a traditional route, you can do the following:
+```c#
+routes.MapRoute("sample", "{controller}/{action}/{id}", null,
+new { id = new IntRouteConstraint() });
+```
