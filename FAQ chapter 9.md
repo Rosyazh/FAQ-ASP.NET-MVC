@@ -86,26 +86,27 @@ return View();
 > Note the key difference here: instead of defi ning the route parameter as just {id}, you’ve now
 defi ned it as {id:int}. Putting a constraint in the route template like this is called an inline
 constraint, and a number of them are available.
----
-**NAME**       **EXAMPLE**           **USAGE DESCRIPTION**
-bool       {n:bool}          A Boolean value
-datetime   {n:datetime}      A DateTime value
-decimal    {n:decimal}       A Decimal value
-double     {n:double}        A Double value
-float      {n:float}         A Single value
-guid       {n:guid}          A Guid value
-int        {n:int}           An Int32 value
-long       {n:long}          An Int64 value
-minlength  {n:minlength(2)}  A String value with at least two characters
-maxlength  {n:maxlength(2)}  A String value with no more than two characters
-length     {n:length(2)}     A String value with exactly two characters
-           {n:length(2,4)}   A String value with two, three, or four characters
-min        {n:min(1)}        An Int64 value that is greater than or equal to 1
-max        {n:max(3)}        An Int64 value that is less than or equal to 3
-range      {n:range(1,3)}    The Int64 value 1, 2, or 3
-alpha      {n:alpha}         A String value containing only the A–Z and a–z characters
-regex      {n:regex (^a+$)}  A String value containing only one or more 'a' characters (a Regex match for the ^a+$ pattern)
----
+
+NAME      | EXAMPLE          | USAGE DESCRIPTION
+----------|------------------|-------------------
+bool      | {n:bool}         | A Boolean value
+datetime  | {n:datetime}     | A DateTime value
+decimal   | {n:decimal}      | A Decimal value
+double    | {n:double}       | A Double value
+float     | {n:float}        | A Single value
+guid      | {n:guid}         | A Guid value
+int       | {n:int}          | An Int32 value
+long      | {n:long}         | An Int64 value
+minlength | {n:minlength(2)} | A String value with at least two characters
+maxlength | {n:maxlength(2)} | A String value with no more than two characters
+length    | {n:length(2)}    | A String value with exactly two characters
+length    | {n:length(2,4)}  | A String value with two, three, or four characters
+min       | {n:min(1)}       | An Int64 value that is greater than or equal to 1
+max       | {n:max(3)}       | An Int64 value that is less than or equal to 3
+range     | {n:range(1,3)}   | The Int64 value 1, 2, or 3
+alpha     | {n:alpha}        | A String value containing only the A–Z and a–z characters
+regex     | {n:regex (^a+$)} | A String value containing only one or more 'a' characters (a Regex match for the ^a+$ pattern)
+
 > Inline route constraints give you fi ne-grained control over when a route matches. If you have URLs
 that look similar but behave differently, route constraints give you the power to express the difference
 between these URLs and map them to the correct action.
