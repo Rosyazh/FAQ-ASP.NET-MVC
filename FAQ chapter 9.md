@@ -13,8 +13,7 @@
 
 Контрольные вопросы к Главе 9:
 - **Каковы предписания к URL с точки зрения удобства использования**
-> Usability expert Jakob Nielsen (www.useit.com) urges developers to pay attention to URLs and
-provides the following guidelines for high-quality URLs. You should provide
+> You should provide:
 
 > ➤ A domain name that is easy to remember and easy to spell
 
@@ -48,31 +47,28 @@ request is dispatched based on the characteristics of the URL—it doesn’t rew
 it uses to match incoming URLs. URL rewriting applies only to incoming requests and does not help
 in generating the original URL.
 
-> MVC has always supported a centralized, imperative, code-based style of defi ning routes that we’ll call
+> MVC has always supported a centralized, imperative, code-based style of defining routes that we’ll call
 traditional routing. This is a good option that is still fully supported. However, MVC 5 adds a
 second option using declarative attributes on your controller classes and action methods, which is
 called attribute routing. This new option is simpler and keeps your route URLs together with your
-controller code. Both options work well, and both are fl exible enough to handle complex routing
+controller code. Both options work well, and both are flexible enough to handle complex routing
 scenarios.
 
 - **Маршрутизация посредством аттрибутов, параметры маршрутизации, аттрибут маршрутизации контроллера, префиксы и отступление от префикса в определенном действии, что значит [Route] (без параметра), route constraints, route defaults, необязательные параметры маршрутизации.**
 
-> **Маршрутизация посредством аттрибутов**
+> *Маршрутизация посредством аттрибутов.*
 
-> After you create a new ASP.NET MVC Web Application project, take a quick look at the code
-in Global.asax.cs. You’ll notice that the Application_Start method contains a call to the
+> The Application_Start method of Global.asax.cs file contains a call to the
 RegisterRoutes method. This method is the central control point for your routes and is located in
-the ~/App_Start/RouteConfig.cs fi le. Because you’re starting with attribute routes, you’ll clear
-out everything in the RegisterRoutes method for now and just have it enable attribute routing by
-calling the MapMvcAttributeRoutes registration method. When you’re done, your RegisterRoutes
-method should look like this:
+the ~/App_Start/RouteConfig.cs file. Enable attribute routing by
+calling the MapMvcAttributeRoutes registration method.
 ```c#
 public static void RegisterRoutes(RouteCollection routes)
 {
 routes.MapMvcAttributeRoutes();
 }
 ```
-> Now you’re ready to write your fi rst route. At its core, a route’s job is to map a request to an action.
+> At its core, a route’s job is to map a request to an action.
 The easiest way to do this is using an attribute directly on an action method:
 ```c#
 public class HomeController : Controller
@@ -101,13 +97,11 @@ return View();
 ```
 > The string you pass in to the route attribute is called the route template, which is a pattern-matching
 rule that determines whether this route applies to an incoming request. If the route matches,
-MVC will run its action method. In the preceding routes, you’ve used static values like about or
-home/index as your route templates, and your route will match only when the URL path has that
-exact string. They might look quite simple, but static routes like these can actually handle quite a bit
-of your application.
+MVC will run its action method. 
 
-> **параметры маршрутизации**
-> Forexample, if your action shows the details for a person record, you might want to include the record
+> *Параметры маршрутизации.*
+
+> For example, if your action shows the details for a person record, you might want to include the record
 ID in your URL. That’s solved by adding a route parameter:
 ```c#
 [Route("person/{id}")]
@@ -130,16 +124,15 @@ return View();
 ```
 > You can name these parameters almost anything you want (alphanumeric characters are allowed
 as well as a few other characters). When a request comes in, Routing parses the request URL and
-places the route parameter values into a dictionary (specifi cally a RouteValueDictionary accessible
+places the route parameter values into a dictionary (specifically a RouteValueDictionary accessible
 via the RequestContext), using the route parameter names as the keys and the corresponding subsections
 of the URL (based on position) as the values.
 > When an attribute route matches and an action method runs, the route parameters from the route
 are used by model binding to populate values for any method parameters with the same name.
-Later, you’ll learn about how route parameters are different from method parameters.
 
-> **аттрибут маршрутизации контроллера**
+> *Аттрибут маршрутизации контроллера.*
 
-> Wouldn’t it be nice to fi nd
+> Wouldn’t it be nice to find
 some way to avoid repeating yourself and just say that each action method maps to a URL under
 home? Fortunately, you can:
 ```c#
@@ -191,7 +184,7 @@ return View();
 }
 ```
 
-> **префиксы и отступление от префикса в определенном действии**
+> *Префиксы и отступление от префикса в определенном действии.*
 
 > Every route begins with home/ (the class is named
 HomeController, after all). You can say that just once, using RoutePrefix:
@@ -216,10 +209,10 @@ return View();
 }
 }
 ```
-> Now, all your route attributes can omit home/ because the prefi x provides that automatically. The
-prefi x is just a default, and you can escape from it if necessary. For example, you might want your
+> Now, all your route attributes can omit home/ because the prefix provides that automatically. The
+prefix is just a default, and you can escape from it if necessary. For example, you might want your
 home controller to support the URL / in addition to /home and /home/index. To do that, just
-begin the route template with ~/, and the route prefi x will be ignored. Here’s how it looks when
+begin the route template with ~/, and the route prefix will be ignored. Here’s how it looks when
 HomeController supports all three URLs for the Index method (/, /home, and /home/index):
 ```c#
 [RoutePrefix("home")]
@@ -244,11 +237,11 @@ return View();
 }
 ```
 
-> **что значит [Route] (без параметра)**
+> *Что значит [Route] (без параметра).*
 
 > 
 
-> **Route constraints.**
+> *Route constraints.*
 
 > A route constraint is a condition that must be satisfied for the route to match. In this case, you just
 need a simple int constraint:
@@ -266,8 +259,8 @@ public ActionResult Details(string name)
 return View();
 }
 ```
-> Note the key difference here: instead of defi ning the route parameter as just {id}, you’ve now
-defi ned it as {id:int}. Putting a constraint in the route template like this is called an inline
+> Note the key difference here: instead of defining the route parameter as just {id}, you’ve now
+defined it as {id:int}. Putting a constraint in the route template like this is called an inline
 constraint, and a number of them are available.
 
 NAME      | EXAMPLE          | USAGE DESCRIPTION
@@ -290,15 +283,14 @@ range     | {n:range(1,3)}   | The Int64 value 1, 2, or 3
 alpha     | {n:alpha}        | A String value containing only the A–Z and a–z characters
 regex     | {n:regex (^a+$)} | A String value containing only one or more 'a' characters (a Regex match for the ^a+$ pattern)
 
-> Inline route constraints give you fi ne-grained control over when a route matches. If you have URLs
+> Inline route constraints give you fine-grained control over when a route matches. If you have URLs
 that look similar but behave differently, route constraints give you the power to express the difference
 between these URLs and map them to the correct action.
 
-
-> **Route defaults.**
+> *Route defaults.*
 
 > The Routing API allows you
-to supply default values for parameters. For example, you can defi ne the route like this:
+to supply default values for parameters. For example, you can define the route like this:
 ```c#
 [Route("home/{action=Index}")]
 ```
@@ -307,7 +299,7 @@ allows this route to match requests when the action parameter is missing. In oth
 now matches any URL with one or two segments instead of matching only two-segment URLs. This
 now allows you to call the Index action method, using the URL /home, which satisfies your goal.
 
-> **Необязательные параметры маршрутизации.**
+> *Необязательные параметры маршрутизации.*
 
 > You can use one route and make id optional:
 ```c#
@@ -343,7 +335,7 @@ cases, the route actually has a default value. An optional parameter just has th
 UrlParameter.Optional.
 
 > Suppose you had the following two
-routes defi ned, the fi rst one containing a default value for the {action} parameter:
+routes defined, the first one containing a default value for the {action} parameter:
 ```c#
 [Route("contacts/{action=Index}/{id}")]
 [Route("contacts/{action}/{id?}")]
@@ -358,9 +350,34 @@ literal values must have a match for each of the route parameter values when mat
 URL.
 
 - **Традиционная маршрутизация в ASP.NET MVC (не посредством аттрибутов), Route Defaults, Route Constraints, ordering route definitions,**
-> 
+> Your RegisterRoutes method should look like this:
+```c#
+public static void RegisterRoutes(RouteCollection routes)
+{
+routes.MapRoute("simple", "{first}/{second}/{third}");
+}
+```
+> The simplest form of the MapRoute method takes in a name and a route template for the route.
+> the route template is a pattern-matching rule used to determine
+whether the route should handle an incoming request (based on the request’s URL). The big difference
+between attribute routing and traditional routing is how a route is linked to an action method.
+Traditional routing relies on name strings rather than attributes to make this link.
+> With an attribute route on an action method, you didn’t need any parameters at all for the route
+to work. The route attribute was placed directly on the action method, and MVC knew to run that
+action when the route matched. With an attribute route on a controller class, MVC still knew which
+class to use (because it had the attribute on it) but not which method, so you used the special action
+parameter to indicate the method by name.
+> If you try to make a request to a URL for the simple route above, (for example, /a/b/c), you’ll
+receive a 500 error. This happens because with a traditional route, there’s no automatic link with
+either a controller or an action. To specify the action, you need to use the action parameter (just
+like you did with route attributes on controller classes). To specify the controller, you need to
+use a new parameter named controller. Without these parameters defi ned, MVC doesn’t know
+what action method you want to run, so it lets you know about this problem by responding with
+a 500 error.
 
-> *Route Defaults*
+
+> *Route Defaults.*
+
 > With an attribute route, you would make the {id} parameter optional by changing it to {id?}
 inline in the route template. Traditional routing takes a different approach. Instead of putting
 this information inline as part of the route template, traditional routing puts it in a separate
