@@ -454,7 +454,37 @@ comes into play when generating URLs, which is covered later in the section “I
 Routes Generate URLs.”
 
 > *Route Constraints*
-> 
+> Traditional routing uses a separate parameter. For example:
+```c#
+routes.MapRoute("blog", "{year}/{month}/{day}",
+ new { controller = "blog", action = "index" },
+ new { year = @"\d{4}", month = @"\d{2}", day = @"\d{2}" });
+routes.MapRoute("simple", "{controller}/{action}/{id}");
+```
+> In the preceding snippet, the fi rst route contains three route parameters, {year}, {month}, and
+{day}. Each of those parameters maps to a constraint in the constraints dictionary specifi ed using
+an anonymous object initializer, `{ year = @"\d{4}", month = @"\d{2}", day = @"\d{2}"}`.
+As you can see, the keys of the constraints dictionary map to the route’s route parameters. Thus the
+constraint for the {year} segment is \d{4}, a regular expression that only matches strings containing
+exactly four digits.
+> The format of this regular expression string is the same as that used by the .NET Framework’s
+Regex class (in fact, the Regex class is used under the hood). If any of the constraints do not match,
+the route is not a match for the request, and Routing moves on to the next route.
+
+> By default, traditional route constraints use regular expression strings to perform matching on
+a request URL, but if you look carefully, you’ll notice that the constraints dictionary is of type
+RouteValueDictionary, which implements IDictionary<string, object>. This means the values
+of that dictionary are of type object, not of type string. This provides fl exibility in what you
+pass as a constraint value. Attribute routing provides a large number of built-in inline constraints,
+but it’s limited to using the route template string. That means no easy way exists to provide custom
+constraint objects in attribute routing. Traditional routing treats constraints as regular expressions
+when they are strings, but it’s easy to pass another constraint object instead when you want
+to use a different kind of constraint.
+
+> *Ordering route definition.*
+> You put your new route before the default simple route because routes
+are evaluated in order. Because a request for /2008/06/07 would match both
+defi ned routes, you need to put the more specifi c route first.
 
 - **Сочетание маршрутизации посредством аттрибутов и традиционной маршрутизации, выбор между двумя подходамик маршрутизации**
 > *Combining Attribute Routing with Traditional Routing*
