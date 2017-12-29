@@ -447,6 +447,26 @@ $(function () {
 });
 ```
 - **JSON объект как результат выполнения метода действия. JSON and Client-Side Templates (общее понимание). Adding Templates (общее понимание).**
+> 
+
+> *Client-side Templates.*
+> 
+
+> *Adding Templates*
+> You’ll add mustache.js to your project as you would expect: by installing the mustache.js
+NuGet package.
+> When NuGet is fi nished adding the package to the project, you should have a new fi le, named mustache.js,
+in your Scripts folder. To begin writing templates, you can include a script reference to
+Mustache in the layout view:
+```c#
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
+<script src="~/Scripts/mustache.js"></script>
+@RenderSection("scripts", required: false)
+```
+> With the plugin in place, you can start using templates in your search implementation.
+
 - **jQuery альтернатива Ajax хелперу формы (общее понимание).**
 > Let’s change the
 ArtistSearch action of the HomeController to return JSON instead of a partial view:
