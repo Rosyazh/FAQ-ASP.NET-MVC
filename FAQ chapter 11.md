@@ -12,17 +12,13 @@
 
 Контрольные вопросы к Главе 11:
 - **В чем отличия ASP.NET Web API от ASP.NET MVC?**
-> Web API ships with MVC, and both utilize controllers. However, Web API does not share the
-Model-View-Controller design of MVC. They both share the notion of mapping HTTP requests
+> Web API does not share the Model-View-Controller design of MVC. They both share the notion of mapping HTTP requests
 to controller actions, but rather than MVC’s pattern of using an output template and view engine
-to render a result, Web API directly renders the resulting model object as the response. Many of the
-design differences between Web API and MVC controllers come from this core difference between
-the two frameworks. This section illustrates the basics of writing a Web API controller and actions.
+to render a result, Web API directly renders the resulting model object as the response.
 
 - **Какой базовый класс и из какого пространства имен используется при создании контроллеров API? Какие методы и какие аттрибуты?**
-> Contains the ValuesController that you get when you create a new project using the
-Web API project template. The fi rst difference you’ll notice is that a new base class is used for all
-API controllers: ApiController.
+> По умолчанию в папке Contollers уже будет два контроллера: стандартный контроллер HomeController и контроллер - ValuesController, который и реализует функционал Web API.
+> The first difference you’ll notice is that a new base class is used for all API controllers: ApiController. Основной функционал сосредоточен, главным образом, а пространстве имен System.Web.Http, поэтому оно подключается в начале файла.
 ```c#
 using System;
 using System.Collections.Generic;
@@ -55,9 +51,7 @@ public class ValuesController : ApiController {
 ```
 > The second thing you’ll notice is that the methods in the controller return raw objects rather than
 views (or other action results). Instead of returning views composed of HTML, the objects that API
-controllers return are transformed into the best matched format that the request asked for. (We’ll
-talk a little later on about how that process takes place, as well as the new action results that were
-added to Web API 2.)
+controllers return are transformed into the best matched format that the request asked for.
 > The third difference owes to conventional dispatching differences between MVC and Web API.
 Whereas MVC controllers always dispatch to actions by name, Web API controllers by default dispatch
 to actions by HTTP verb. Although you can use verb override attributes such as `[HttpGet]` or
@@ -65,9 +59,6 @@ to actions by HTTP verb. Although you can use verb override attributes such as `
 name with the verb name. The action methods in the sample controller are named directly after the
 verb, but they could also have just started with the verb name (meaning Get and GetValues are
 both reachable with the GET verb).
-> It’s also worth noting that ApiController is defi ned in the namespace System.Web.Http and not
-in System.Web.Mvc where Controller is defi ned. When we discuss self-hosting later, the reason for
-this will be clearer.
 
 - **Параметры методов действий Web API контроллера.**
 > To accept incoming values from the request, you can put parameters on your action, and just like
@@ -80,52 +71,64 @@ and complex types (everything else) are taken from the body. An additional restr
 Only a single value can come from the body, and that value must represent the entirety of the body.
 > Incoming parameters that are not part of the body are handled by a model binding system that is
 similar to the one included in MVC. Incoming and outgoing bodies, on the other hand, are handled
-by a brand-new concept called formatters. Both model binding and formatters are covered in more
-detail later in this chapter.
+by a brand-new concept called formatters.
 
 - **Результаты методов действий Web API контроллера.**
-> Web API 2 introduced a better solution to this problem: the new action result classes. To return
-action results, Web API controller actions use a return value type of IHttpActionResult, much like you would with MVC controllers and ActionResult. The ApiController class includes many sets of
+> To return action results, Web API controller actions use a return value type of IHttpActionResult, much like you would with MVC controllers and ActionResult. The ApiController class includes many sets of
 methods that directly return action results; their resulting behavior is described in the following list:
-➤ BadRequest: Returns an HTTP 400 (“Bad Request”). Optionally includes either
+
+> ➤ BadRequest: Returns an HTTP 400 (“Bad Request”). Optionally includes either
 a message or an automatically formatted error class based on validation errors in a
 ModelStateDictionary.
-➤ Conflict: Returns an HTTP 409 (“Confl ict”).
-➤ Content: Returns content (similar to the behavior of an action method that returns a raw
+
+> ➤ Conflict: Returns an HTTP 409 (“Conflict”).
+
+> ➤ Content: Returns content (similar to the behavior of an action method that returns a raw
 object). Content format is automatically negotiated, or optionally the developer can specify
 the media type formatter and/or the content type of the response. The developer chooses
 which HTTP status code the response uses.
-➤ Created: Returns an HTTP 201 (“Created”). The Location header is set to the provided
+
+> ➤ Created: Returns an HTTP 201 (“Created”). The Location header is set to the provided
 URL location.
-➤ CreatedAtRoute: Returns an HTTP 201 (“Created”). The Location header is set to the URL
+
+> ➤ CreatedAtRoute: Returns an HTTP 201 (“Created”). The Location header is set to the URL
 that is constructed based on the provided route name and route values.
-➤ InternalServerError: Returns an HTTP 500 (“Internal Server Error”). Optionally includes
+
+> ➤ InternalServerError: Returns an HTTP 500 (“Internal Server Error”). Optionally includes
 content derived from the provided exception.
-➤ Json: Returns an HTTP 200 (“OK”), with the provided content formatted as JSON.
+
+> ➤ Json: Returns an HTTP 200 (“OK”), with the provided content formatted as JSON.
 Optionally formats the content with the provided serializer settings and/or character
 encoding.
-➤ NotFound: Returns an HTTP 404 (“Not Found”).
-➤ Ok: Returns an HTTP 200 (“OK”). Optionally includes content whose format is automatically
+
+> ➤ NotFound: Returns an HTTP 404 (“Not Found”).
+
+> ➤ Ok: Returns an HTTP 200 (“OK”). Optionally includes content whose format is automatically
 negotiated (to specify the exact format, use the Content method instead).
-➤ Redirect: Returns an HTTP 302 (“Found”). The Location header is set to the provided
+
+> ➤ Redirect: Returns an HTTP 302 (“Found”). The Location header is set to the provided
 URL location.
-➤ RedirectToRoute: Returns an HTTP 302 (“Found”). The Location header is set to the URL
+
+> ➤ RedirectToRoute: Returns an HTTP 302 (“Found”). The Location header is set to the URL
 that is constructed based on the provided route name and route values.
-➤ ResponseMessage: Returns the provided HttpResponseMessage.
-➤ StatusCode: Returns a response with the provided HTTP status code (and an empty
+
+> ➤ ResponseMessage: Returns the provided HttpResponseMessage.
+
+> ➤ StatusCode: Returns a response with the provided HTTP status code (and an empty
 response body).
-➤ Unauthorized: Returns an HTTP 401 (“Unauthorized”). The authentication header is set to
+
+> ➤ Unauthorized: Returns an HTTP 401 (“Unauthorized”). The authentication header is set to
 the provided authentication header values.
 
 - **Конфигурация Web API.**
-> Web API was designed not to have any such static global values, and instead put its confi guration
+> Web API was designed not to have any such static global values, and instead put its configuration
 into the HttpConfiguration class. This has two impacts on application design:
 
 > ➤ You can run multiple Web API servers in the same application (because each server has its
-own non-global confi guration)
+own non-global configuration)
 
 > ➤ You can run both unit tests and end-to-end tests more easily in Web API because you contain
-that confi guration in a single non-global object, as statics make parallelized testing much
+that configuration in a single non-global object, as statics make parallelized testing much
 more challenging.
 > The configuration class includes access to the following items:
 
@@ -143,17 +146,17 @@ more challenging.
 
 > ➤ HTTP message handlers
 
-> ➤ A fl ag for whether to include error details such as stack traces
+> ➤ A flag for whether to include error details such as stack traces
 
 > ➤ A Properties bag that can hold user-defi ned values
 
-> How you create or get access to this confi guration depends on how you are hosting your application:
+> How you create or get access to this configuration depends on how you are hosting your application:
 inside ASP.NET, WCF self-host, or the new OWIN self-host.
 
 - **Configuration in Web-Hosted Web API.**
 > The default MVC project templates are all web-hosted projects because MVC only supports webhosting.
-Inside the App_Startup folder are the startup confi guration fi les for your MVC application.
-The Web API confi guration code is in WebApiConfig.cs (or .vb), and looks something like this:
+Inside the App_Startup folder are the startup configuration files for your MVC application.
+The Web API configuration code is in WebApiConfig.cs (or .vb), and looks something like this:
 ```c#
 public static class WebApiConfig {
  public static void Register(HttpConfiguration config) {
@@ -168,7 +171,7 @@ public static class WebApiConfig {
  }
 }
 ```
-> Developers will make modifi cations to this fi le to refl ect any confi guration changes they want to
+> Developers will make modifications to this file to reflect any configuration changes they want to
 make for their application. The default contains a single route as an example to get you started.
 
 - **Configuration in Self-Hosted Web API (общее ознакомление). Configurating WCF Self-Host (общее ознакомление). Configuration for OWIN Self-Host (общее ознакомление).**
@@ -184,12 +187,12 @@ in your application is to use NuGet to install the appropriate self-host Web API
 Microsoft.AspNet.WebApi.SelfHost or Microsoft.AspNet.WebApi.OwinSelfHost). Both packages
 include all the System.Net.Http and System.Web.Http dependencies automatically.
 > When self-hosting, you are responsible for creating the confi guration and starting and stopping the
-Web API server as appropriate. Each self-host system uses a slightly different confi guration system,
+Web API server as appropriate. Each self-host system uses a slightly different configuration system,
 as described in the following sections.
 
-> *Confi gurating WCF Self-Host*
-> The confi guration class you need to instantiate is HttpSelfHostConfiguration, which extends the
-base HttpConfiguration class by requiring a base URL to listen to. After setting up the confi guration,
+> *Configurating WCF Self-Host*
+> The configuration class you need to instantiate is HttpSelfHostConfiguration, which extends the
+base HttpConfiguration class by requiring a base URL to listen to. After setting up the configuration,
 you create an instance of HttpSelfHostServer, and then tell it to start listening.
 Here is a sample snippet of startup code for WCF self-host:
 ```c#
@@ -207,13 +210,13 @@ server.OpenAsync().Wait();
 server.CloseAsync().Wait();
 ```
 > If you are self-hosting in a console app, you would probably run this code in your Main function.
-For self-hosting in other application types, just fi nd the appropriate place to run application startup
+For self-hosting in other application types, just find the appropriate place to run application startup
 and shutdown code and run these things there. In both cases, the .Wait() call could (and should)
 be replaced with an async code (using async and await) if your application development framework
 allows you to write an asynchronous startup and shutdown code. 
 
 > *Configuration for OWIN Self-Host*
-> OWIN (Open Web Interface for .NET) is a fairly new way to defi ne web applications that helps
+> OWIN (Open Web Interface for .NET) is a fairly new way to define web applications that helps
 isolate the application itself from the hosting and web server that will run the app. In this way, an
 application can be written such that it could be hosted inside of IIS, inside of a custom web server,
 or even inside of ASP.NET itself.
@@ -229,7 +232,7 @@ using (WebApp.Start<Startup>("http://localhost:8080/")) {
 }
 ```
 > Note that this code contains no Web API references; instead, it “starts” another class called
-Startup. The defi nition of the Startup class that supports Web API might look something like this:
+Startup. The definition of the Startup class that supports Web API might look something like this:
 ```c#
 using System;
 using System.Linq;
@@ -248,15 +251,15 @@ class Startup {
 }
 ```
 > The Startup class in an OWIN application conceptually replaces the WebApiConfig class that’s
-used in web-hosted applications. The IAppBuilder type from OWIN allows you to confi gure the
+used in web-hosted applications. The IAppBuilder type from OWIN allows you to configure the
 application that will run; here you use the UseWebApi extension method that the Web API OWIN
 Self Host package provides to confi gure OWIN.
 
 - **Добавление маршрутов. Маршрутизация посредством аттрибутов.**
 >  Web API’s primary route registration is the MapHttpRoute
-extension method. As is the case for all Web API confi guration tasks, the routes for your application
-are confi gured off the HttpConfiguration object.
-> If you peek into the confi guration object, you’ll discover that the Routes property points to an
+extension method. As is the case for all Web API configuration tasks, the routes for your application
+are configured off the HttpConfiguration object.
+> If you peek into the configuration object, you’ll discover that the Routes property points to an
 instance of the HttpRouteCollection class rather than ASP.NET’s RouteCollection class. Web
 API offers several versions of MapHttpRoute that work against the ASP.NET RouteCollection
 class directly, but such routes are only usable when web-hosted, so we recommend (and the project
@@ -265,7 +268,7 @@ templates encourage) that you use the versions of MapHttpRoute on HttpRouteColle
 > The attribute-based routing feature that was introduced in MVC 5 is also
 available to your Web API 2 applications. To enable attribute routing for your
 Web API controllers, add the following line of code to your Web API startup
-code, before any of your hand-confi gured routes:
+code, before any of your hand-configured routes:
 ```c#
 config.MapHttpAttributeRoutes();
 ```
@@ -303,13 +306,13 @@ indicate what verb(s) should be allowed when the default conventions aren’t co
 
 - **Привязка параметров, аттрибуты.**
 > Web API uses parameter binders to determine how to provide values for individual
-parameters. You can use attributes to infl uence that decision (such as `[ModelBinder]`, an
+parameters. You can use attributes to influence that decision (such as `[ModelBinder]`, an
 attribute we’ve seen before with MVC), but the default logic uses the simple type versus complex
-type logic when there are no overrides applied to infl uence the binding decision.
-> The Parameter Binding system looks to the action’s parameters to fi nd any attributes that derive
+type logic when there are no overrides applied to influence the binding decision.
+> The Parameter Binding system looks to the action’s parameters to find any attributes that derive
 from ParameterBindingAttribute. The following list shows a few such attributes that are built
 into Web API. In addition, you can register custom parameter binders that do not use model
-binding or formatters, either by registering them in the confi guration or by writing your own
+binding or formatters, either by registering them in the configuration or by writing your own
 ParameterBindingAttribute-based attributes.
 
 > ➤ ModelBinderAttribute: This tells the parameter binding system to use model binding
