@@ -1,4 +1,4 @@
-**Create local DB:**
+# h3 Create local DB:
 > - create DB via PSQL:
 > ```sql
 >	 create database ECL_base;
