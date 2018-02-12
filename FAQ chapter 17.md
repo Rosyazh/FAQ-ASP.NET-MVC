@@ -1,3 +1,43 @@
+*Создание локальной БД:*
+- октрыть PSQL и написать следующее:
+```sql
+create database ECL_base;
+```
+- создать роль:
+```sql
+create role ECL_adm with login password 'ECL_adm96541';
+```
+- выделить привилегии:
+```sql
+grant all privileges on database ECL_base to ECL_adm;
+```
+
+*Заполнение локальной БД:*
+- восстановить БД из бэкапа, прописав в командной строке:
+1.
+```
+psql -U ecl_adm -d ecl_base -f ecl_base_b.sql
+```
+можно явно указать путь к файлу, например:
+```
+psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b.sql
+```
+2. 
+```
+psql -U ecl_adm -d ecl_base -f ecl_base_b_2.sql
+```
+можно явно указать путь к файлу, например:
+```
+psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b_2.sql
+```
+
+*Создание БД для ELMAH:*
+- через PSQL создать БД:
+```sql
+create database elmah owner postgres;
+```
+
+
 Выполнение практического задания.
 
 Практическое задание: 
