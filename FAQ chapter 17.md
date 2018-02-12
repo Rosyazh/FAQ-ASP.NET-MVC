@@ -1,45 +1,45 @@
-**Создание локальной БД:**
-- октрыть PSQL и написать следующее:
-```sql
-create database ECL_base;
-```
-- создать роль:
-```sql
-create role ECL_adm with login password 'ECL_adm96541';
-```
-- выделить привилегии:
-```sql
-grant all privileges on database ECL_base to ECL_adm;
-```
+**Create local DB:**
+> - create DB via PSQL:
+> ```sql
+>	 create database ECL_base;
+> ```
+> - create a role:
+> ```sql
+>	 create role ECL_adm with login password 'ECL_adm96541';
+> ```
+> - grant privileges:
+> ```sql
+>	 grant all privileges on database ECL_base to ECL_adm;
+> ```
 
 
-**Заполнение локальной БД:**
-- восстановить БД из бэкапа, прописав в командной строке:
+**Fill local DB:**
+> - restore the database from the backup by writing to the command line:
 
-> 1. первый файл
-```
-psql -U ecl_adm -d ecl_base -f ecl_base_b.sql
-```
-можно явно указать путь к файлу, например:
-```
-psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b.sql
-```
+>> 1. first file:
+> ```
+>	 psql -U ecl_adm -d ecl_base -f ecl_base_b.sql
+> ```
+> you can explicitly specify the path to the file, for example:
+> ```
+>	 psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b.sql
+> ```
 
-> 2. второй файл
-```
-psql -U ecl_adm -d ecl_base -f ecl_base_b_2.sql
-```
-можно явно указать путь к файлу, например:
-```
-psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b_2.sql
-```
+> 2. second file:
+> ```
+>	 psql -U ecl_adm -d ecl_base -f ecl_base_b_2.sql
+> ```
+> you can explicitly specify the path to the file, for example:
+> ```
+>	 psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b_2.sql
+> ```
 
 
-**Создание БД для ELMAH:**
-- через PSQL создать БД:
-```sql
-create database elmah owner postgres;
-```
+**Create DB for ELMAH**
+> - create DB via PSQL:
+> ```sql
+>	 create database elmah owner postgres;
+> ```
 
 
 Выполнение практического задания.
