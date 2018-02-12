@@ -1,4 +1,4 @@
-*Создание локальной БД:*
+**Создание локальной БД:**
 - октрыть PSQL и написать следующее:
 ```sql
 create database ECL_base;
@@ -13,10 +13,10 @@ grant all privileges on database ECL_base to ECL_adm;
 ```
 
 
-*Заполнение локальной БД:*
+**Заполнение локальной БД:**
 - восстановить БД из бэкапа, прописав в командной строке:
 
--- 1. первый файл
+> 1. первый файл
 ```
 psql -U ecl_adm -d ecl_base -f ecl_base_b.sql
 ```
@@ -25,7 +25,7 @@ psql -U ecl_adm -d ecl_base -f ecl_base_b.sql
 psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\EmpInfoMain\EmpInfoMain\Utils\LocalDB\ecl_base_b.sql
 ```
 
--- 2. второй файл
+> 2. второй файл
 ```
 psql -U ecl_adm -d ecl_base -f ecl_base_b_2.sql
 ```
@@ -35,11 +35,12 @@ psql -U ecl_adm -d ecl_base -f C:\Users\yrassol\source\repos\ECLExtension\main\E
 ```
 
 
-*Создание БД для ELMAH:*
+**Создание БД для ELMAH:**
 - через PSQL создать БД:
 ```sql
 create database elmah owner postgres;
 ```
+
 
 Выполнение практического задания.
 
